@@ -1,16 +1,10 @@
 # rerune-ios
 
-Customer-facing Swift Package Manager repository for the ReRune iOS SDK.
+Public Swift Package Manager repository for the ReRune iOS SDK.
 
-## Status
+## Install
 
-- This repository is the public binary distribution repo for `ReRune`.
-- Tagged releases publish an `XCFramework` artifact and an SPM `Package.swift` manifest.
-- The first binary package release will be published from the private source repo release flow.
-
-## Planned Install
-
-In Xcode, add this package dependency:
+Add this package dependency in Xcode:
 
 ```text
 https://github.com/BasalBit/rerune-ios.git
@@ -22,6 +16,24 @@ Then import:
 import ReRune
 ```
 
+## Requirements
+
+- iOS 15+
+
+## Public API
+
+- `reRuneSetup(...)`
+- `reRuneCheckForUpdates()`
+- `reRuneRevision`
+- `reRuneRevisionPublisher`
+- `reRuneString(...)`
+- `View.reRuneObserveRevision()`
+
 ## Example Apps
 
-- Customer example apps for UIKit and SwiftUI are published into this repository as part of each binary SDK release.
+Open `Examples/ReRuneExamples.xcworkspace` to try both demo apps:
+
+- `ReRuneUIKitExample`
+- `ReRuneSwiftUIExample`
+
+Both examples use the same demo OTA publish id and show the currently released binary package layout.

@@ -1,0 +1,8 @@
+"title" = "Local";
+"body" = "Local";
+"button" = "Check for updates";
+"sample_placeholder" = "Sample number: %1$d text: %2$@";
+"last_redraw" = "Last redraw: %1$@";
+"input_hint" = "Type sample text";
+"input_content_description" = "Sample input field";
+"check_updates_content_description" = "Check for OTA updates";
