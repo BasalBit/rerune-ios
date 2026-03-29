@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Expanded the public README with UIKit and SwiftUI integration quick starts.
+
 ## 0.2.1 - 2026-03-30
 
 - Replaced the static `ReRune.*` namespace API with top-level `reRune*` entry points so the `ReRune` module can be distributed as a stable binary XCFramework.
