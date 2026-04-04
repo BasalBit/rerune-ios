@@ -2,7 +2,10 @@
 
 ## Unreleased
 
-- Expanded the public README with UIKit and SwiftUI integration quick starts.
+## 0.2.2 - 2026-04-04
+
+- Expanded the public binary repo README to include the same UIKit and SwiftUI integration quick starts as the source SDK README.
+- Fixed XCFramework packaging so the released binary embeds the generated `Modules/ReRune.swiftmodule` metadata required for `import ReRune`, and made the packaging script fail fast when module files are missing.
 
 ## 0.2.1 - 2026-03-30
 
