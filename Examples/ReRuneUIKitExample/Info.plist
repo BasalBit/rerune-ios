@@ -22,9 +22,11 @@
     <true/>
     <key>RERUNE_OTA_PUBLISH_ID</key>
     <string>$(RERUNE_OTA_PUBLISH_ID)</string>
-    <key>UIApplicationSupportsIndirectInputEvents</key>
-    <true/>
-    <key>UILaunchScreen</key>
-    <dict/>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	<key>UIUserInterfaceStyle</key>
+	<string>Dark</string>
+	<key>UILaunchScreen</key>
+	<dict/>
 </dict>
 </plist>

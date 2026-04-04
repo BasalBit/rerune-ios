@@ -8,18 +8,28 @@
 
 /* Begin PBXBuildFile section */
 		1A1111111111111111111101 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A1111111111111111111202 /* AppDelegate.swift */; };
-		1A1111111111111111111102 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A1111111111111111111203 /* ViewController.swift */; };
+		1A1111111111111111111102 /* WelcomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A1111111111111111111208 /* WelcomeViewController.swift */; };
 		1A1111111111111111111103 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1A1111111111111111111204 /* Localizable.strings */; };
 		1A1111111111111111111104 /* ReRune in Frameworks */ = {isa = PBXBuildFile; productRef = 1A1111111111111111111902 /* ReRune */; };
+		1A1111111111111111111105 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A1111111111111111111207 /* Assets.xcassets */; };
+		1A1111111111111111111106 /* StoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A1111111111111111111209 /* StoryViewController.swift */; };
+		1A1111111111111111111107 /* DemoTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A1111111111111111111210 /* DemoTheme.swift */; };
+		1A1111111111111111111108 /* BadgeChipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A1111111111111111111211 /* BadgeChipView.swift */; };
+		1A1111111111111111111109 /* StatusCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A1111111111111111111212 /* StatusCardView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		1A1111111111111111111201 /* ReRuneUIKitExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ReRuneUIKitExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A1111111111111111111202 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		1A1111111111111111111203 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		1A1111111111111111111204 /* Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = Base.lproj/Localizable.strings; sourceTree = "<group>"; };
 		1A1111111111111111111205 /* Example.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Example.xcconfig; sourceTree = "<group>"; };
 		1A1111111111111111111206 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1A1111111111111111111207 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		1A1111111111111111111208 /* WelcomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeViewController.swift; sourceTree = "<group>"; };
+		1A1111111111111111111209 /* StoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryViewController.swift; sourceTree = "<group>"; };
+		1A1111111111111111111210 /* DemoTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoTheme.swift; sourceTree = "<group>"; };
+		1A1111111111111111111211 /* BadgeChipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeChipView.swift; sourceTree = "<group>"; };
+		1A1111111111111111111212 /* StatusCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusCardView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,7 +67,10 @@
 			isa = PBXGroup;
 			children = (
 				1A1111111111111111111202 /* AppDelegate.swift */,
-				1A1111111111111111111203 /* ViewController.swift */,
+				1A1111111111111111111208 /* WelcomeViewController.swift */,
+				1A1111111111111111111209 /* StoryViewController.swift */,
+				1A1111111111111111111210 /* DemoTheme.swift */,
+				1A1111111111111111111406 /* Components */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -66,6 +79,7 @@
 			isa = PBXGroup;
 			children = (
 				1A1111111111111111111204 /* Localizable.strings */,
+				1A1111111111111111111207 /* Assets.xcassets */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -76,6 +90,15 @@
 				1A1111111111111111111205 /* Example.xcconfig */,
 			);
 			path = Config;
+			sourceTree = "<group>";
+		};
+		1A1111111111111111111406 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				1A1111111111111111111211 /* BadgeChipView.swift */,
+				1A1111111111111111111212 /* StatusCardView.swift */,
+			);
+			path = Components;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -143,6 +166,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1A1111111111111111111103 /* Localizable.strings in Resources */,
+				1A1111111111111111111105 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -154,7 +178,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				1A1111111111111111111101 /* AppDelegate.swift in Sources */,
-				1A1111111111111111111102 /* ViewController.swift in Sources */,
+				1A1111111111111111111102 /* WelcomeViewController.swift in Sources */,
+				1A1111111111111111111106 /* StoryViewController.swift in Sources */,
+				1A1111111111111111111107 /* DemoTheme.swift in Sources */,
+				1A1111111111111111111108 /* BadgeChipView.swift in Sources */,
+				1A1111111111111111111109 /* StatusCardView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -185,7 +213,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1A1111111111111111111205 /* Example.xcconfig */;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = "";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGNING_ALLOWED = NO;
 				CODE_SIGNING_REQUIRED = NO;
 				CURRENT_PROJECT_VERSION = 1;
@@ -212,7 +240,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1A1111111111111111111205 /* Example.xcconfig */;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = "";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGNING_ALLOWED = NO;
 				CODE_SIGNING_REQUIRED = NO;
 				CURRENT_PROJECT_VERSION = 1;
