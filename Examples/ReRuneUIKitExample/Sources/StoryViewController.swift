@@ -45,10 +45,10 @@ final class StoryViewController: UIViewController, ReRuneTextRefreshable {
     }
 
     func rebindStrings() {
-        titleLabel.text = reRuneString("story_title")
-        bodyPrimaryLabel.text = reRuneString("story_body_primary")
-        bodySecondaryLabel.text = reRuneString("story_body_secondary")
-        captionChip.update(title: reRuneString("story_caption"))
+        titleLabel.text = localized("story_title")
+        bodyPrimaryLabel.text = localized("story_body_primary")
+        bodySecondaryLabel.text = localized("story_body_secondary")
+        captionChip.update(title: localized("story_caption"))
         updateRefreshButtonState()
     }
 
@@ -128,7 +128,7 @@ final class StoryViewController: UIViewController, ReRuneTextRefreshable {
     }
 
     private func updateRefreshButtonState() {
-        refreshButton.setTitle(reRuneString("story_refresh_cta"), for: .normal)
+        refreshButton.setTitle(localized("story_refresh_cta"), for: .normal)
         refreshButton.isEnabled = !isRefreshing
 
         if isRefreshing {
@@ -150,5 +150,9 @@ final class StoryViewController: UIViewController, ReRuneTextRefreshable {
             refreshButton.subviews.filter { $0 is UIActivityIndicatorView }.forEach { $0.removeFromSuperview() }
             refreshButton.titleEdgeInsets = .zero
         }
+    }
+
+    private func localized(_ key: String) -> String {
+        NSLocalizedString(key, comment: "")
     }
 }

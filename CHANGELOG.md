@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.3.0 - 2026-04-09
+
+- Switched the iOS SDK from explicit `reRuneString(...)` lookups to native-first `Bundle.main` interception for `Localizable.strings`, so UIKit and Foundation call sites can keep using `NSLocalizedString(...)` and `Bundle.localizedString(...)`.
+- Removed the public cache customization surface and synchronous explicit lookup API from the public SDK so setup can restore cached OTA strings before returning.
+- Updated tests, examples, and docs to treat `Bundle.main` / `NSLocalizedString(...)` as the primary integration path and to document the phase-1 SwiftUI `Text("key")` limitation.
+
 ## 0.2.2 - 2026-04-04
 
 - Expanded the public binary repo README to include the same UIKit and SwiftUI integration quick starts as the source SDK README.

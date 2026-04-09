@@ -14,13 +14,13 @@ struct WelcomeView: View {
                     ScrollView(showsIndicators: false) {
                         VStack(spacing: 20) {
                             VStack(alignment: .leading, spacing: 18) {
-                                BadgeChipView(title: reRuneString("welcome_badge"))
+                                BadgeChipView(title: localized("welcome_badge"))
 
-                                Text(reRuneString("welcome_title"))
+                                Text(localized("welcome_title"))
                                     .font(.system(size: 36, weight: .bold, design: .rounded))
                                     .foregroundColor(DemoTheme.textPrimary)
 
-                                Text(reRuneString("welcome_subtitle"))
+                                Text(localized("welcome_subtitle"))
                                     .font(.system(size: 17, weight: .medium, design: .rounded))
                                     .foregroundColor(DemoTheme.textSecondary)
                                     .lineSpacing(4)
@@ -42,12 +42,12 @@ struct WelcomeView: View {
                             VStack(alignment: .leading, spacing: 14) {
                                 StatusCardView(
                                     rows: [
-                                        (label: reRuneString("welcome_locale_label"), value: reRuneString("welcome_locale_value")),
-                                        (label: reRuneString("welcome_last_synced_label"), value: lastSyncedText)
+                                        (label: localized("welcome_locale_label"), value: localized("welcome_locale_value")),
+                                        (label: localized("welcome_last_synced_label"), value: lastSyncedText)
                                     ]
                                 )
 
-                                Text(reRuneString(refreshPhase.localizationKey))
+                                Text(localized(refreshPhase.localizationKey))
                                     .font(.system(size: 14, weight: .semibold, design: .rounded))
                                     .foregroundColor(refreshPhase.tint)
                                     .animation(.easeInOut(duration: 0.2), value: refreshPhase)
@@ -56,7 +56,7 @@ struct WelcomeView: View {
                             .padding(.horizontal, DemoTheme.horizontalPadding)
 
                             NavigationLink(destination: StoryView()) {
-                                Text(reRuneString("welcome_open_story_cta"))
+                                Text(localized("welcome_open_story_cta"))
                                     .font(.system(size: 17, weight: .bold, design: .rounded))
                                     .foregroundColor(DemoTheme.bgPrimary)
                                     .frame(maxWidth: .infinity)
@@ -130,6 +130,10 @@ struct WelcomeView: View {
 
     private func heroHeight(for availableHeight: CGFloat) -> CGFloat {
         min(max(availableHeight * 0.34, 300), 460)
+    }
+
+    private func localized(_ key: String) -> String {
+        NSLocalizedString(key, comment: "")
     }
 }
 

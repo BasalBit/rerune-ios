@@ -22,21 +22,21 @@ struct StoryView: View {
                         }
 
                     VStack(alignment: .leading, spacing: 16) {
-                        Text(reRuneString("story_title"))
+                        Text(localized("story_title"))
                             .font(.system(size: 34, weight: .bold, design: .rounded))
                             .foregroundColor(DemoTheme.textPrimary)
 
-                        Text(reRuneString("story_body_primary"))
+                        Text(localized("story_body_primary"))
                             .font(.system(size: 17, weight: .medium, design: .rounded))
                             .foregroundColor(DemoTheme.textPrimary)
                             .lineSpacing(4)
 
-                        Text(reRuneString("story_body_secondary"))
+                        Text(localized("story_body_secondary"))
                             .font(.system(size: 16, weight: .regular, design: .rounded))
                             .foregroundColor(DemoTheme.textSecondary)
                             .lineSpacing(4)
 
-                        BadgeChipView(title: reRuneString("story_caption"))
+                        BadgeChipView(title: localized("story_caption"))
                     }
 
                     Button(action: runRefresh) {
@@ -47,7 +47,7 @@ struct StoryView: View {
                                     .tint(DemoTheme.bgPrimary)
                             }
 
-                            Text(reRuneString("story_refresh_cta"))
+                            Text(localized("story_refresh_cta"))
                                 .font(.system(size: 16, weight: .bold, design: .rounded))
                         }
                         .foregroundColor(DemoTheme.bgPrimary)
@@ -75,5 +75,9 @@ struct StoryView: View {
             _ = await reRuneCheckForUpdates()
             isRefreshing = false
         }
+    }
+
+    private func localized(_ key: String) -> String {
+        NSLocalizedString(key, comment: "")
     }
 }

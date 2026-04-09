@@ -27,7 +27,7 @@ import ReRune
 
 reRuneSetup(otaPublishId: "replace-with-ota-publish-id")
 
-titleLabel.text = reRuneString("title")
+titleLabel.text = NSLocalizedString("title", comment: "")
 
 reRuneRevisionPublisher
     .dropFirst()
@@ -38,6 +38,7 @@ reRuneRevisionPublisher
 ## SwiftUI quick start
 
 ```swift
+import SwiftUI
 import ReRune
 
 @main
@@ -55,15 +56,26 @@ struct ExampleApp: App {
 }
 ```
 
+```swift
+import SwiftUI
+
+struct ContentView: View {
+    var body: some View {
+        Text(NSLocalizedString("title", comment: ""))
+    }
+}
+```
+
 ## Notes
 
-- SDK is opt-in and does not swizzle or globally intercept iOS localization APIs.
+- SDK installs a targeted `Bundle.main` localization override so UIKit and Foundation code can keep using native lookup APIs.
 - API auth is `otaPublishId` only.
 - Manifest endpoint is fixed by SDK.
 - Manifest parsing is strict: root `version`, keyed `locales`, locale `version`, optional locale `url`.
-- Locale payloads must be Apple `.strings` text.
+- Locale payloads must be Apple `Localizable.strings` text.
 - `reRuneRevisionPublisher` is the change notification stream for visible UI refreshes; the emitted value is the latest applied manifest revision and may repeat when OTA payloads change under the same manifest revision.
-- iOS intentionally keeps explicit lookup via `reRuneString(...)` instead of trying to mirror Android's wrapped native resource APIs.
+- Native OTA override support in phase 1 is limited to `Bundle.main` and the default `Localizable.strings` table.
+- SwiftUI `Text("key")`, `LocalizedStringKey`, and `LocalizedStringResource` are not supported for OTA interception in phase 1; use `NSLocalizedString(...)` inside SwiftUI views instead.
 - Periodic refresh policy uses Android-style split fields: `periodicIntervalInHours` + `periodicIntervalInDays`.
 
 ## Example apps
@@ -73,4 +85,6 @@ Open `Examples/ReRuneExamples.xcworkspace` to try both demo apps:
 - `ReRuneUIKitExample`
 - `ReRuneSwiftUIExample`
 
-Both examples use the same demo OTA publish id and show the currently released binary package layout.
+Both examples use the same demo OTA publish id.
+
+They mirror the welcome/story demo flows kept in the source repo examples while consuming the published package instead of the local workspace package.

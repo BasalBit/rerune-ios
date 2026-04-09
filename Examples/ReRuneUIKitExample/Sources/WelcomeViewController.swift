@@ -90,16 +90,16 @@ final class WelcomeViewController: UIViewController, ReRuneTextRefreshable {
     }
 
     func rebindStrings() {
-        badgeView.update(title: reRuneString("welcome_badge"))
-        titleLabel.text = reRuneString("welcome_title")
-        subtitleLabel.text = reRuneString("welcome_subtitle")
+        badgeView.update(title: localized("welcome_badge"))
+        titleLabel.text = localized("welcome_title")
+        subtitleLabel.text = localized("welcome_subtitle")
         statusCardView.update(rows: [
-            (label: reRuneString("welcome_locale_label"), value: reRuneString("welcome_locale_value")),
-            (label: reRuneString("welcome_last_synced_label"), value: lastSyncedText),
+            (label: localized("welcome_locale_label"), value: localized("welcome_locale_value")),
+            (label: localized("welcome_last_synced_label"), value: lastSyncedText),
         ])
-        refreshStateLabel.text = reRuneString(refreshPhase.localizationKey)
+        refreshStateLabel.text = localized(refreshPhase.localizationKey)
         refreshStateLabel.textColor = refreshPhase.tint
-        openStoryButton.setTitle(reRuneString("welcome_open_story_cta"), for: .normal)
+        openStoryButton.setTitle(localized("welcome_open_story_cta"), for: .normal)
     }
 
     @objc
@@ -233,5 +233,9 @@ final class WelcomeViewController: UIViewController, ReRuneTextRefreshable {
 
     private static func formattedTimestamp(for date: Date) -> String {
         timestampFormatter.string(from: date)
+    }
+
+    private func localized(_ key: String) -> String {
+        NSLocalizedString(key, comment: "")
     }
 }

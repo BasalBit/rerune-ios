@@ -1,12 +1,13 @@
 # ReRune UIKit Example
 
-This sample demonstrates UIKit integration with the single `ReRune` SDK module using the same live OTA publish id and demo string keys as the Android Views example app.
+This sample demonstrates the local `ReRune` package from this repository using a themed UIKit welcome/story flow.
 
 ## Configure
 
 1. `Config/Example.xcconfig` is already preconfigured with the shared demo `RERUNE_OTA_PUBLISH_ID` used by the Android examples.
 2. If you need to override it locally, copy `Config/Example.xcconfig` to `Config/Local.xcconfig`.
 3. In Xcode, assign `Local.xcconfig` to the app target build configuration.
+4. The Xcode project already points to the local package path `../..`, so no SPM URL setup is required in this repo.
 
 ## Run
 
@@ -16,6 +17,8 @@ This sample demonstrates UIKit integration with the single `ReRune` SDK module u
 
 ## Behavior
 
-- App calls `reRuneSetup(...)` on launch with the shared demo publish id, `.info` logging, and a 1-day periodic refresh interval.
-- The screen mirrors the Android Views demo keys: `title`, `body`, `button`, `sample_placeholder`, `last_redraw`, `input_hint`, and `apply_programmatic_texts_button`.
-- Pull-to-refresh, manual update checks, and programmatic title/body rebinding all exercise the iOS OTA lookup flow.
+- App calls `reRuneSetup(...)` on launch with the shared demo publish id.
+- All user-facing copy is read through native Foundation lookup APIs such as `NSLocalizedString(...)`.
+- The welcome screen shows the OTA demo badge, title/subtitle, locale/last-synced status card, and a pull-to-refresh flow.
+- The story screen shows the secondary content view and a manual refresh button.
+- Visible UIKit controllers rebind their text when `reRuneRevisionPublisher` emits.
