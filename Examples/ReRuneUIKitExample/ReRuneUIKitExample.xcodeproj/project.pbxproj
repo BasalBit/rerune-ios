@@ -149,7 +149,7 @@
 			);
 			mainGroup = 1A1111111111111111111401;
 			packageReferences = (
-				1A1111111111111111111901 /* XCLocalSwiftPackageReference "../.." */,
+				1A1111111111111111111901 /* XCRemoteSwiftPackageReference "rerune-ios" */,
 			);
 			productRefGroup = 1A1111111111111111111402 /* Products */;
 			projectDirPath = "";
@@ -286,17 +286,21 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCLocalSwiftPackageReference section */
-		1A1111111111111111111901 /* XCLocalSwiftPackageReference "../.." */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ../..;
+	/* Begin XCRemoteSwiftPackageReference section */
+		1A1111111111111111111901 /* XCRemoteSwiftPackageReference "rerune-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/BasalBit/rerune-ios.git";
+			requirement = {
+				kind = exactVersion;
+				version = 0.3.0;
+			};
 		};
-/* End XCLocalSwiftPackageReference section */
+	/* End XCRemoteSwiftPackageReference section */
 
-/* Begin XCSwiftPackageProductDependency section */
+	/* Begin XCSwiftPackageProductDependency section */
 		1A1111111111111111111902 /* ReRune */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 1A1111111111111111111901 /* XCLocalSwiftPackageReference "../.." */;
+			package = 1A1111111111111111111901 /* XCRemoteSwiftPackageReference "rerune-ios" */;
 			productName = ReRune;
 		};
 /* End XCSwiftPackageProductDependency section */

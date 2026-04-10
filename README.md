@@ -87,4 +87,4 @@ Open `Examples/ReRuneExamples.xcworkspace` to try both demo apps:
 
 Both examples use the same demo OTA publish id.
 
-They mirror the welcome/story demo flows kept in the source repo examples while consuming the published package instead of the local workspace package.
+They mirror the welcome/story demo flows kept in the source repo examples while consuming the published `0.3.0` package instead of the local workspace package.
