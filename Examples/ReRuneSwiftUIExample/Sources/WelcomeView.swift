@@ -133,7 +133,11 @@ struct WelcomeView: View {
     }
 
     private func localized(_ key: String) -> String {
-        NSLocalizedString(key, comment: "")
+        if key == "welcome_title" || key == "story_title" {
+            return Bundle.main.localizedString(forKey: key, value: nil, table: nil)
+        }
+
+        return NSLocalizedString(key, comment: "")
     }
 }
 

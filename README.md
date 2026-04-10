@@ -20,6 +20,15 @@ Then import:
 import ReRune
 ```
 
+## Supported string lookups
+
+ReRune 0.3.0 intercepts native Foundation localization lookups for the default `Localizable.strings` table in `Bundle.main`.
+
+- `NSLocalizedString("key", comment: "")`
+- `Bundle.main.localizedString(forKey: "key", value: nil, table: nil)`
+
+These are the consumer-facing string lookup paths currently supported for OTA updates.
+
 ## UIKit quick start
 
 ```swift
@@ -28,6 +37,7 @@ import ReRune
 reRuneSetup(otaPublishId: "replace-with-ota-publish-id")
 
 titleLabel.text = NSLocalizedString("title", comment: "")
+subtitleLabel.text = Bundle.main.localizedString(forKey: "subtitle", value: nil, table: nil)
 
 reRuneRevisionPublisher
     .dropFirst()
@@ -61,7 +71,10 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        Text(NSLocalizedString("title", comment: ""))
+        VStack {
+            Text(NSLocalizedString("title", comment: ""))
+            Text(Bundle.main.localizedString(forKey: "subtitle", value: nil, table: nil))
+        }
     }
 }
 ```
@@ -88,3 +101,5 @@ Open `Examples/ReRuneExamples.xcworkspace` to try both demo apps:
 Both examples use the same demo OTA publish id.
 
 They mirror the welcome/story demo flows kept in the source repo examples while consuming the published `0.3.0` package instead of the local workspace package.
+
+The examples intentionally demonstrate both supported lookup styles: `NSLocalizedString(...)` and `Bundle.main.localizedString(...)`.
