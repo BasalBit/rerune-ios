@@ -1,0 +1,15 @@
+{
+  "originHash" : "885e087e85c5c99aa84a3cd680d6c50954a1d915b3155b0d526dae22ee6d6d66",
+  "pins" : [
+    {
+      "identity" : "rerune-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/BasalBit/rerune-ios.git",
+      "state" : {
+        "revision" : "5d311d00d6842c6e5495a65f2a5a0a9904d9de82",
+        "version" : "0.4.0"
+      }
+    }
+  ],
+  "version" : 3
+}
