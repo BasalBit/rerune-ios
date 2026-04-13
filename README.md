@@ -49,6 +49,7 @@ import ReRune
 reRuneSetup(otaPublishId: "replace-with-ota-publish-id")
 
 titleLabel.text = NSLocalizedString("title", comment: "")
+subtitleLabel.text = Bundle.main.localizedString(forKey: "subtitle", value: nil, table: nil)
 
 reRuneRevisionPublisher
     .dropFirst()
@@ -81,8 +82,11 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        Text(NSLocalizedString("title", comment: ""))
-            .reRuneObserveRevision()
+        VStack {
+            Text(NSLocalizedString("title", comment: ""))
+            Text(Bundle.main.localizedString(forKey: "subtitle", value: nil, table: nil))
+        }
+        .reRuneObserveRevision()
     }
 }
 ```
