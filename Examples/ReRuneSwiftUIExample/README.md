@@ -18,6 +18,6 @@ This sample demonstrates the local `ReRune` package from this repository using a
 ## Behavior
 
 - App initializes the SDK in `App.init` with the shared demo publish id.
-- SwiftUI views use `NSLocalizedString(...)` for OTA-managed strings and rely on `.reRuneObserveRevision()` to refresh the visible subtree.
+- SwiftUI screens use `NSLocalizedString(...)` for OTA-managed strings and attach `.reRuneObserveRevision()` at the screen level so refresh only redraws visible content.
 - The welcome screen includes pull-to-refresh, status card state, and navigation into the story screen.
 - The story screen includes a manual refresh button to exercise OTA update checks from SwiftUI.

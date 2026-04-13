@@ -26,7 +26,6 @@ struct ReRuneSwiftUIExampleApp: App {
         WindowGroup {
             WelcomeView()
                 .preferredColorScheme(.dark)
-                .reRuneObserveRevision()
         }
     }
 }

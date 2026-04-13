@@ -3,10 +3,8 @@
 Open `Examples/ReRuneExamples.xcworkspace` to access both iOS example apps from one place.
 
 - `ReRuneUIKitExample`: themed UIKit welcome/story flow with manual rebinding from `reRuneRevisionPublisher`
-- `ReRuneSwiftUIExample`: themed SwiftUI welcome/story flow with `.reRuneObserveRevision()`
+- `ReRuneSwiftUIExample`: themed SwiftUI welcome/story flow with screen-level `.reRuneObserveRevision()`
 
-Both example Xcode projects reference the published Swift package at `https://github.com/BasalBit/rerune-ios.git`, pinned to version `0.3.0`, so they behave like an external consumer integration instead of depending on the local checkout.
+Both example Xcode projects reference the local package at `../..`, so they build against the source in this repository rather than a published package.
 
 Both examples use the shared demo OTA publish id in their local `Config/Example.xcconfig` files and target iOS 15+.
-
-They intentionally mix both supported string lookup styles: `NSLocalizedString(...)` and `Bundle.main.localizedString(...)`.

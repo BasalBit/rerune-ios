@@ -1,6 +1,10 @@
 # Changelog
 
-## Unreleased
+## 0.4.0 - 2026-04-13
+
+- Switched the fixed iOS OTA platform from `ios_localizable_strings` to `ios_xcstrings` and removed OTA compatibility with flat `.strings` locale payloads.
+- Changed locale payload parsing to require `.xcstrings` catalog JSON, applying only simple `Localizable` key/value entries and skipping unsupported catalog features such as plurals, substitutions, and variations.
+- Changed `reRuneCheckForUpdates()` to continue OTA fetches even when the calling SwiftUI refresh task is cancelled, and updated SwiftUI guidance/examples to observe revision changes at the screen level.
 
 ## 0.3.0 - 2026-04-09
 

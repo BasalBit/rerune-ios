@@ -153,10 +153,6 @@ final class StoryViewController: UIViewController, ReRuneTextRefreshable {
     }
 
     private func localized(_ key: String) -> String {
-        if key == "welcome_title" || key == "story_title" {
-            return Bundle.main.localizedString(forKey: key, value: nil, table: nil)
-        }
-
-        return NSLocalizedString(key, comment: "")
+        NSLocalizedString(key, comment: "")
     }
 }

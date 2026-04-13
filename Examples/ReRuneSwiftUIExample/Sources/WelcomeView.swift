@@ -90,14 +90,13 @@ struct WelcomeView: View {
         }
         .tint(DemoTheme.accentPrimary)
         .navigationViewStyle(StackNavigationViewStyle())
+        .reRuneObserveRevision()
     }
 
     private func runRefreshFlow() async {
         await MainActor.run {
             refreshPhase = .checking
         }
-
-        try? await Task.sleep(nanoseconds: 350_000_000)
 
         await MainActor.run {
             refreshPhase = .downloading
@@ -108,8 +107,6 @@ struct WelcomeView: View {
         await MainActor.run {
             refreshPhase = .applying
         }
-
-        try? await Task.sleep(nanoseconds: 300_000_000)
 
         await MainActor.run {
             lastSyncedText = Self.formattedTimestamp(for: Date())
@@ -133,11 +130,7 @@ struct WelcomeView: View {
     }
 
     private func localized(_ key: String) -> String {
-        if key == "welcome_title" || key == "story_title" {
-            return Bundle.main.localizedString(forKey: key, value: nil, table: nil)
-        }
-
-        return NSLocalizedString(key, comment: "")
+        NSLocalizedString(key, comment: "")
     }
 }
 
