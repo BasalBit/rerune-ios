@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/BasalBit/rerune-ios.git",
       "state" : {
-        "revision" : "5d311d00d6842c6e5495a65f2a5a0a9904d9de82",
-        "version" : "0.4.0"
+        "revision" : "6ddbfe30ae082ac425353affe00a75e88a27a339",
+        "version" : "0.5.0"
       }
     }
   ],
