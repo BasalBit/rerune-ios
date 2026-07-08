@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.0 - 2026-07-08
+
+- Added runtime locale availability APIs so apps can present `compiled app locales + ReRune manifest locales` through `reRuneAvailableLocales` and `reRuneAvailableLocalesPublisher`.
+- Added `reRuneSetLocale(_:)` and `reRuneSelectedLocale` so an in-app picker can select a dashboard-only locale without requiring that locale to be compiled into the app bundle.
+- Updated OTA lookup fallback to use the selected locale, or the system preferred locale when no override is selected, then fall back to the app default remote locale before bundled strings.
+- Documented the remote-language expansion use case where an English-only app can render a dashboard-delivered German locale after the manifest and locale payload are fetched and cached.
+
 ## 0.4.0 - 2026-04-13
 
 - Switched the fixed iOS OTA platform from `ios_localizable_strings` to `ios_xcstrings` and removed OTA compatibility with flat `.strings` locale payloads.
