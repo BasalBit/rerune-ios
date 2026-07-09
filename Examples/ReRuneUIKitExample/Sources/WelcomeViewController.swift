@@ -93,9 +93,10 @@ final class WelcomeViewController: UIViewController, ReRuneTextRefreshable {
         badgeView.update(title: localized("welcome_badge"))
         titleLabel.text = localized("welcome_title")
         subtitleLabel.text = localized("welcome_subtitle")
+        let localeCode = resolvedLocaleCode()
         statusCardView.update(rows: [
-            (label: localized("welcome_locale_label"), value: resolvedLocaleCode()),
-            (label: localized("welcome_last_synced_label"), value: lastSyncedText),
+            .picker(label: localized("welcome_locale_label"), value: localeCode, menu: localeMenu(selectedLocale: localeCode)),
+            .text(label: localized("welcome_last_synced_label"), value: lastSyncedText),
         ])
         refreshStateLabel.text = localized(refreshPhase.localizationKey)
         refreshStateLabel.textColor = refreshPhase.tint
@@ -239,9 +240,27 @@ final class WelcomeViewController: UIViewController, ReRuneTextRefreshable {
         NSLocalizedString(key, comment: "")
     }
 
+    private func localeMenu(selectedLocale: String) -> UIMenu {
+        let actions = availableLocaleCodes(selectedLocale: selectedLocale).map { locale in
+            UIAction(title: locale, state: locale == selectedLocale ? .on : .off) { [weak self] _ in
+                self?.openAppSettings()
+            }
+        }
+
+        return UIMenu(children: actions)
+    }
+
+    private func openAppSettings() {
+        guard let url = URL(string: UIApplication.openSettingsURLString) else {
+            return
+        }
+
+        UIApplication.shared.open(url)
+    }
+
     private func resolvedLocaleCode() -> String {
         let availableLocales = Set(reRuneAvailableLocales.compactMap(Self.normalizedLocaleOrNil))
-        let preferredLocale = reRuneSelectedLocale ?? Locale.preferredLanguages.first ?? Self.appDefaultLocale()
+        let preferredLocale = Locale.preferredLanguages.first ?? Self.appDefaultLocale()
         var candidates = Self.localeChain(from: preferredLocale)
 
         for fallback in Self.localeChain(from: Self.appDefaultLocale()) where !candidates.contains(fallback) {
@@ -249,6 +268,12 @@ final class WelcomeViewController: UIViewController, ReRuneTextRefreshable {
         }
 
         return candidates.first(where: { availableLocales.contains($0) }) ?? candidates.first ?? Self.appDefaultLocale()
+    }
+
+    private func availableLocaleCodes(selectedLocale: String) -> [String] {
+        var locales = Set(reRuneAvailableLocales.compactMap(Self.normalizedLocaleOrNil))
+        locales.insert(selectedLocale)
+        return locales.sorted()
     }
 
     private static func localeChain(from localeTag: String) -> [String] {

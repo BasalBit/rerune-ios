@@ -1,6 +1,20 @@
 import UIKit
 
 final class StatusCardView: UIView {
+    struct Row {
+        let label: String
+        let value: String
+        let menu: UIMenu?
+
+        static func text(label: String, value: String) -> Row {
+            Row(label: label, value: value, menu: nil)
+        }
+
+        static func picker(label: String, value: String, menu: UIMenu) -> Row {
+            Row(label: label, value: value, menu: menu)
+        }
+    }
+
     private let stackView = UIStackView()
     private var arrangedRows: [UIView] = []
 
@@ -36,6 +50,10 @@ final class StatusCardView: UIView {
     }
 
     func update(rows: [(label: String, value: String)]) {
+        update(rows: rows.map { Row.text(label: $0.label, value: $0.value) })
+    }
+
+    func update(rows: [Row]) {
         arrangedRows.forEach {
             stackView.removeArrangedSubview($0)
             $0.removeFromSuperview()
@@ -43,7 +61,7 @@ final class StatusCardView: UIView {
         arrangedRows.removeAll()
 
         for (index, row) in rows.enumerated() {
-            let rowView = makeRow(label: row.label, value: row.value)
+            let rowView = makeRow(row: row)
             stackView.addArrangedSubview(rowView)
             arrangedRows.append(rowView)
 
@@ -58,7 +76,7 @@ final class StatusCardView: UIView {
         }
     }
 
-    private func makeRow(label: String, value: String) -> UIView {
+    private func makeRow(row: Row) -> UIView {
         let container = UIView()
         container.translatesAutoresizingMaskIntoConstraints = false
 
@@ -66,14 +84,9 @@ final class StatusCardView: UIView {
             font: DemoTheme.roundedFont(size: 14, weight: .semibold),
             color: DemoTheme.textSecondary
         )
-        labelView.text = label
+        labelView.text = row.label
 
-        let valueView = UILabel.demoLabel(
-            font: DemoTheme.roundedFont(size: 15, weight: .semibold),
-            color: DemoTheme.textPrimary
-        )
-        valueView.text = value
-        valueView.textAlignment = .right
+        let valueView = row.menu.map { makePickerButton(title: row.value, menu: $0) } ?? makeValueLabel(text: row.value)
 
         let stack = UIStackView(arrangedSubviews: [labelView, UIView(), valueView])
         stack.translatesAutoresizingMaskIntoConstraints = false
@@ -90,5 +103,34 @@ final class StatusCardView: UIView {
         ])
 
         return container
+    }
+
+    private func makeValueLabel(text: String) -> UILabel {
+        let valueView = UILabel.demoLabel(
+            font: DemoTheme.roundedFont(size: 15, weight: .semibold),
+            color: DemoTheme.textPrimary
+        )
+        valueView.text = text
+        valueView.textAlignment = .right
+        return valueView
+    }
+
+    private func makePickerButton(title: String, menu: UIMenu) -> UIButton {
+        let button = UIButton(type: .system)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.showsMenuAsPrimaryAction = true
+        button.menu = menu
+
+        var configuration = UIButton.Configuration.plain()
+        configuration.title = title
+        configuration.image = UIImage(systemName: "chevron.up.chevron.down")
+        configuration.imagePlacement = .trailing
+        configuration.imagePadding = 6
+        configuration.contentInsets = .zero
+        button.configuration = configuration
+        button.tintColor = DemoTheme.textPrimary
+        button.titleLabel?.font = DemoTheme.roundedFont(size: 15, weight: .semibold)
+
+        return button
     }
 }

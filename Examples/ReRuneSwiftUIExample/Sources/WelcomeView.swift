@@ -1,8 +1,10 @@
 import Foundation
 import SwiftUI
 import ReRune
+import UIKit
 
 struct WelcomeView: View {
+    @Environment(\.openURL) private var openURL
     @State private var refreshPhase: RefreshPhase = .idle
     @State private var lastSyncedText = Self.formattedTimestamp(for: Date())
 
@@ -43,9 +45,14 @@ struct WelcomeView: View {
                             VStack(alignment: .leading, spacing: 14) {
                                 StatusCardView(
                                     rows: [
-                                        (label: localized("welcome_locale_label"), value: resolvedLocaleCode),
                                         (label: localized("welcome_last_synced_label"), value: lastSyncedText)
-                                    ]
+                                    ],
+                                    localePicker: LocalePickerRow(
+                                        label: localized("welcome_locale_label"),
+                                        selectedLocale: resolvedLocaleCode,
+                                        locales: availableLocaleCodes,
+                                        onSelect: { _ in openAppSettings() }
+                                    )
                                 )
 
                                 Text(localized(refreshPhase.localizationKey))
@@ -138,9 +145,21 @@ struct WelcomeView: View {
         Self.resolvedLocaleCode()
     }
 
+    private var availableLocaleCodes: [String] {
+        Self.availableLocaleCodes(selectedLocale: resolvedLocaleCode)
+    }
+
+    private func openAppSettings() {
+        guard let url = URL(string: UIApplication.openSettingsURLString) else {
+            return
+        }
+
+        openURL(url)
+    }
+
     private static func resolvedLocaleCode() -> String {
         let availableLocales = Set(reRuneAvailableLocales.compactMap(normalizedLocaleOrNil))
-        let preferredLocale = reRuneSelectedLocale ?? Locale.preferredLanguages.first ?? appDefaultLocale()
+        let preferredLocale = Locale.preferredLanguages.first ?? appDefaultLocale()
         var candidates = localeChain(from: preferredLocale)
 
         for fallback in localeChain(from: appDefaultLocale()) where !candidates.contains(fallback) {
@@ -148,6 +167,12 @@ struct WelcomeView: View {
         }
 
         return candidates.first(where: { availableLocales.contains($0) }) ?? candidates.first ?? appDefaultLocale()
+    }
+
+    private static func availableLocaleCodes(selectedLocale: String) -> [String] {
+        var locales = Set(reRuneAvailableLocales.compactMap(normalizedLocaleOrNil))
+        locales.insert(selectedLocale)
+        return locales.sorted()
     }
 
     private static func localeChain(from localeTag: String) -> [String] {
