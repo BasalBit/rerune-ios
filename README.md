@@ -107,7 +107,7 @@ reRuneSetLocale(nil)
 - `reRuneRevisionPublisher` is the change notification stream for visible UI refreshes; the emitted value is the latest applied manifest revision and may repeat when OTA payloads change under the same manifest revision.
 - Native OTA override support in phase 1 is limited to `Bundle.main` and the default `Localizable` table.
 - SwiftUI `Text("key")`, `LocalizedStringKey`, and `LocalizedStringResource` are not supported for OTA interception in phase 1; use `NSLocalizedString(...)` inside SwiftUI views instead.
-- Periodic refresh policy uses Android-style split fields: `periodicIntervalInHours` + `periodicIntervalInDays`.
+- Periodic refresh policy uses split fields: `periodicIntervalInHours` + `periodicIntervalInDays`.
 
 ## Example apps
 

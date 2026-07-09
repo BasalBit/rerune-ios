@@ -48,7 +48,7 @@
 - Delivered `reRuneRevisionPublisher` updates on the main thread so UIKit observers can safely refresh UI when OTA content changes.
 - Added `docs/sdk-maintenance-overview.md` with the current iOS module, runtime, backend, cache, and testing notes for maintainers.
 - Added `AGENTS.md` and documented that this repository intentionally keeps maintainer history in `iOS_SPECS.md` and `CHANGELOG.md` instead of `docs/sessions/`.
-- Replaced iOS `ReRuneUpdatePolicy.periodicInterval` with Android-style `periodicIntervalInHours` and `periodicIntervalInDays` fields.
+- Replaced iOS `ReRuneUpdatePolicy.periodicInterval` with split `periodicIntervalInHours` and `periodicIntervalInDays` fields.
 - Updated iOS OTA refresh behavior so manifest `304` responses reuse the cached manifest and still revalidate locale payloads with cached ETags.
 - Softened locale-level update failures to preserve cached values and return `noChange` unless the manifest step itself fails.
 - Clarified revision semantics so `reRuneRevision` tracks the latest applied manifest revision while `reRuneRevisionPublisher` remains the UI update notification stream.

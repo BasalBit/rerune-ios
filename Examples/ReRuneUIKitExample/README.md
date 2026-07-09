@@ -4,7 +4,7 @@ This sample demonstrates the local `ReRune` package from this repository using a
 
 ## Configure
 
-1. `Config/Example.xcconfig` is already preconfigured with the shared demo `RERUNE_OTA_PUBLISH_ID` used by the Android examples.
+1. `Config/Example.xcconfig` is already preconfigured with the shared demo `RERUNE_OTA_PUBLISH_ID`.
 2. If you need to override it locally, copy `Config/Example.xcconfig` to `Config/Local.xcconfig`.
 3. In Xcode, assign `Local.xcconfig` to the app target build configuration.
 4. The Xcode project already points to the local package path `../..`, so no SPM URL setup is required in this repo.
