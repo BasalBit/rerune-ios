@@ -1,3 +1,4 @@
+import Foundation
 import SwiftUI
 import ReRune
 
@@ -42,7 +43,7 @@ struct WelcomeView: View {
                             VStack(alignment: .leading, spacing: 14) {
                                 StatusCardView(
                                     rows: [
-                                        (label: localized("welcome_locale_label"), value: localized("welcome_locale_value")),
+                                        (label: localized("welcome_locale_label"), value: resolvedLocaleCode),
                                         (label: localized("welcome_last_synced_label"), value: lastSyncedText)
                                     ]
                                 )
@@ -131,6 +132,58 @@ struct WelcomeView: View {
 
     private func localized(_ key: String) -> String {
         NSLocalizedString(key, comment: "")
+    }
+
+    private var resolvedLocaleCode: String {
+        Self.resolvedLocaleCode()
+    }
+
+    private static func resolvedLocaleCode() -> String {
+        let availableLocales = Set(reRuneAvailableLocales.compactMap(normalizedLocaleOrNil))
+        let preferredLocale = reRuneSelectedLocale ?? Locale.preferredLanguages.first ?? appDefaultLocale()
+        var candidates = localeChain(from: preferredLocale)
+
+        for fallback in localeChain(from: appDefaultLocale()) where !candidates.contains(fallback) {
+            candidates.append(fallback)
+        }
+
+        return candidates.first(where: { availableLocales.contains($0) }) ?? candidates.first ?? appDefaultLocale()
+    }
+
+    private static func localeChain(from localeTag: String) -> [String] {
+        let normalized = normalize(localeTag)
+        let parts = normalized.split(separator: "-").map(String.init)
+        guard !parts.isEmpty else { return [appDefaultLocale()] }
+
+        return stride(from: parts.count, through: 1, by: -1).map { index in
+            parts.prefix(index).joined(separator: "-")
+        }
+    }
+
+    private static func appDefaultLocale() -> String {
+        if
+            let developmentRegion = Bundle.main.object(forInfoDictionaryKey: "CFBundleDevelopmentRegion") as? String,
+            let normalized = normalizedLocaleOrNil(developmentRegion)
+        {
+            return normalized
+        }
+
+        return "en"
+    }
+
+    private static func normalizedLocaleOrNil(_ localeTag: String) -> String? {
+        let normalized = normalize(localeTag)
+        guard !normalized.isEmpty, normalized != "Base" else {
+            return nil
+        }
+
+        return normalized
+    }
+
+    private static func normalize(_ localeTag: String) -> String {
+        localeTag
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .replacingOccurrences(of: "_", with: "-")
     }
 }
 

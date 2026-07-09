@@ -2,7 +2,6 @@
 "welcome_title" = "Welcome to ReRune";
 "welcome_subtitle" = "Pull down to fetch the latest published translations.";
 "welcome_locale_label" = "Current locale";
-"welcome_locale_value" = "English";
 "welcome_last_synced_label" = "Last synced";
 "welcome_open_story_cta" = "Open story";
 "welcome_refresh_state_idle" = "Pull to refresh";
