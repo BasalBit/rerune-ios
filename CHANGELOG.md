@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+## 0.6.0 - 2026-07-09
+
+- Removed the SDK-owned locale override APIs `reRuneSetLocale(_:)` and `reRuneSelectedLocale` so ReRune no longer duplicates platform language selection state.
+- Kept dashboard manifest locales available through `reRuneAvailableLocales` and `reRuneAvailableLocalesPublisher`.
+- Updated runtime lookup to follow the platform preferred language only, falling back to the app default remote locale and then bundled strings.
+- Updated the SwiftUI and UIKit examples to present available locales in a native picker that opens iOS Settings instead of setting a ReRune-owned locale override.
+
 ## 0.5.1 - 2026-07-09
 
 - Republished the public binary package metadata so the SwiftPM checksum matches the uploaded `ReRune.xcframework.zip` asset.
