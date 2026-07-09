@@ -1,12 +1,11 @@
 import Foundation
 import SwiftUI
 import ReRune
-import UIKit
 
 struct WelcomeView: View {
-    @Environment(\.openURL) private var openURL
     @State private var refreshPhase: RefreshPhase = .idle
     @State private var lastSyncedText = Self.formattedTimestamp(for: Date())
+    @State private var selectedLocaleCode = Self.resolvedLocaleCode()
 
     var body: some View {
         NavigationView {
@@ -49,9 +48,9 @@ struct WelcomeView: View {
                                     ],
                                     localePicker: LocalePickerRow(
                                         label: localized("welcome_locale_label"),
-                                        selectedLocale: resolvedLocaleCode,
+                                        selectedLocale: selectedLocaleCode,
                                         locales: availableLocaleCodes,
-                                        onSelect: { _ in openAppSettings() }
+                                        onSelect: selectLocale
                                     )
                                 )
 
@@ -99,6 +98,12 @@ struct WelcomeView: View {
         .tint(DemoTheme.accentPrimary)
         .navigationViewStyle(StackNavigationViewStyle())
         .reRuneObserveRevision()
+        .onReceive(reRuneRevisionPublisher) { _ in
+            syncSelectedLocaleCode()
+        }
+        .onReceive(reRuneAvailableLocalesPublisher) { _ in
+            syncSelectedLocaleCode()
+        }
     }
 
     private func runRefreshFlow() async {
@@ -141,25 +146,24 @@ struct WelcomeView: View {
         NSLocalizedString(key, comment: "")
     }
 
-    private var resolvedLocaleCode: String {
-        Self.resolvedLocaleCode()
-    }
-
     private var availableLocaleCodes: [String] {
-        Self.availableLocaleCodes(selectedLocale: resolvedLocaleCode)
+        Self.availableLocaleCodes(selectedLocale: selectedLocaleCode)
     }
 
-    private func openAppSettings() {
-        guard let url = URL(string: UIApplication.openSettingsURLString) else {
-            return
-        }
+    private func selectLocale(_ locale: String) {
+        let normalizedLocale = Self.normalizedLocaleOrNil(locale) ?? locale
+        selectedLocaleCode = normalizedLocale
+        UserDefaults.standard.set(normalizedLocale, forKey: "rerune.example.selectedLocale")
+        reRuneSetLocale(normalizedLocale)
+    }
 
-        openURL(url)
+    private func syncSelectedLocaleCode() {
+        selectedLocaleCode = Self.resolvedLocaleCode()
     }
 
     private static func resolvedLocaleCode() -> String {
         let availableLocales = Set(reRuneAvailableLocales.compactMap(normalizedLocaleOrNil))
-        let preferredLocale = Locale.preferredLanguages.first ?? appDefaultLocale()
+        let preferredLocale = reRuneSelectedLocale ?? Locale.preferredLanguages.first ?? appDefaultLocale()
         var candidates = localeChain(from: preferredLocale)
 
         for fallback in localeChain(from: appDefaultLocale()) where !candidates.contains(fallback) {

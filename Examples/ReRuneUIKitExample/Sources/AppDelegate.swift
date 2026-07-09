@@ -22,6 +22,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             ?? "replace-with-ota-publish-id"
 
         reRuneSetup(otaPublishId: publishId)
+        reRuneSetLocale(UserDefaults.standard.string(forKey: "rerune.example.selectedLocale"))
         configureAppearance()
 
         let controller = WelcomeViewController()

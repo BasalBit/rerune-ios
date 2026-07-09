@@ -18,7 +18,9 @@ This sample demonstrates the local `ReRune` package from this repository using a
 ## Behavior
 
 - App calls `reRuneSetup(...)` on launch with the shared demo publish id.
+- App restores the previously selected demo language from `UserDefaults` and applies it with `reRuneSetLocale(_:)`.
 - All user-facing copy is read through native Foundation lookup APIs such as `NSLocalizedString(...)`.
-- The welcome screen shows the OTA demo badge, title/subtitle, locale/last-synced status card, and a pull-to-refresh flow.
+- The welcome screen shows the OTA demo badge, title/subtitle, locale picker backed by `reRuneAvailableLocales`, last-synced status card, and a pull-to-refresh flow.
+- Selecting a locale persists it and calls `reRuneSetLocale(_:)` so dashboard-only languages can render without opening iOS Settings.
 - The story screen shows the secondary content view and a manual refresh button.
 - Visible UIKit controllers rebind their text when `reRuneRevisionPublisher` emits.

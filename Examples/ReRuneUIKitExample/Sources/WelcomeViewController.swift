@@ -243,24 +243,21 @@ final class WelcomeViewController: UIViewController, ReRuneTextRefreshable {
     private func localeMenu(selectedLocale: String) -> UIMenu {
         let actions = availableLocaleCodes(selectedLocale: selectedLocale).map { locale in
             UIAction(title: locale, state: locale == selectedLocale ? .on : .off) { [weak self] _ in
-                self?.openAppSettings()
+                self?.selectLocale(locale)
             }
         }
 
         return UIMenu(children: actions)
     }
 
-    private func openAppSettings() {
-        guard let url = URL(string: UIApplication.openSettingsURLString) else {
-            return
-        }
-
-        UIApplication.shared.open(url)
+    private func selectLocale(_ locale: String) {
+        UserDefaults.standard.set(locale, forKey: "rerune.example.selectedLocale")
+        reRuneSetLocale(locale)
     }
 
     private func resolvedLocaleCode() -> String {
         let availableLocales = Set(reRuneAvailableLocales.compactMap(Self.normalizedLocaleOrNil))
-        let preferredLocale = Locale.preferredLanguages.first ?? Self.appDefaultLocale()
+        let preferredLocale = reRuneSelectedLocale ?? Locale.preferredLanguages.first ?? Self.appDefaultLocale()
         var candidates = Self.localeChain(from: preferredLocale)
 
         for fallback in Self.localeChain(from: Self.appDefaultLocale()) where !candidates.contains(fallback) {

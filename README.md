@@ -24,9 +24,9 @@ import ReRune
 
 ReRune can make dashboard-only languages available even when the app bundle shipped with only English resources. For example, if the app has only `en` bundled strings and the ReRune dashboard later publishes German (`de`), the SDK fetches the German manifest entry and locale payload in the background, caches it, and exposes `de` through `reRuneAvailableLocales`.
 
-When German is the user's platform-preferred language, `NSLocalizedString(...)` calls can render the dashboard-delivered German strings after the first successful fetch. On the next launch, `reRuneSetup(...)` restores the cached manifest and German strings before the UI is shown, so the same language can render immediately without a compiled `de.lproj`.
+When German is selected with `reRuneSetLocale("de")`, or when German is the user's platform-preferred language, `NSLocalizedString(...)` calls can render the dashboard-delivered German strings after the first successful fetch. On the next launch, `reRuneSetup(...)` restores the cached manifest and German strings before the UI is shown, so the same language can render immediately without a compiled `de.lproj`.
 
-This runtime language expansion is content-level. iOS Settings language lists, App Store language metadata, native system strings, and new string keys still require an app release. ReRune does not provide its own app-language override; runtime lookup follows the platform preferred language.
+This runtime language expansion is app-level. iOS Settings language lists, App Store language metadata, native system strings, and new string keys still require an app release.
 
 ## UIKit quick start
 
@@ -74,7 +74,7 @@ struct ContentView: View {
 }
 ```
 
-## Runtime language availability
+## Runtime language picker
 
 After setup, apps can show the union of compiled bundle locales and ReRune dashboard locales:
 
@@ -82,9 +82,37 @@ After setup, apps can show the union of compiled bundle locales and ReRune dashb
 let locales = reRuneAvailableLocales
 ```
 
-`reRuneAvailableLocalesPublisher` emits when a manifest fetch changes the remote locale list. The active lookup language follows the platform preferred language exposed by Foundation. A dashboard-only locale can render when that locale is already the user's preferred language and ReRune has fetched or restored its remote strings.
+`reRuneAvailableLocalesPublisher` emits when a manifest fetch changes the remote locale list. To switch the SDK runtime language from an in-app picker:
 
-In-app language pickers can present `reRuneAvailableLocales`, but iOS does not provide a public runtime API for adding a newly fetched dashboard-only locale to the system app-language picker after the app has shipped.
+```swift
+reRuneSetLocale("de")
+```
+
+Pass `nil` to follow the system preferred language again:
+
+```swift
+reRuneSetLocale(nil)
+```
+
+The current app-level override is available as `reRuneSelectedLocale`. Persist picker choices in app storage and reapply them after `reRuneSetup(...)` if the selected language should survive app restarts.
+
+For example:
+
+```swift
+private let localeStorageKey = "selectedLocale"
+
+func configureLocalization() {
+    reRuneSetup(otaPublishId: "replace-with-ota-publish-id")
+    reRuneSetLocale(UserDefaults.standard.string(forKey: localeStorageKey))
+}
+
+func selectLocale(_ locale: String?) {
+    UserDefaults.standard.set(locale, forKey: localeStorageKey)
+    reRuneSetLocale(locale)
+}
+```
+
+The picker should render `reRuneAvailableLocales`; after a successful manifest fetch, that list can include dashboard-only locales that were not compiled into the app bundle.
 
 ## Notes
 
@@ -95,7 +123,7 @@ In-app language pickers can present `reRuneAvailableLocales`, but iOS does not p
 - Locale payloads must be `.xcstrings` catalog JSON.
 - Phase 1 only applies simple `Localizable` key/value entries from the catalog and skips unsupported entry types such as plurals, substitutions, and variations.
 - Dashboard-only locales appear in `reRuneAvailableLocales` after a successful manifest fetch, or on startup when a cached manifest already lists them.
-- Runtime lookup uses the platform preferred language. Missing OTA keys fall back to the app default remote locale before bundled strings.
+- Runtime lookup uses the selected ReRune locale when set, otherwise the platform preferred language. Missing OTA keys fall back to the app default remote locale before bundled strings.
 - `reRuneRevisionPublisher` is the change notification stream for visible UI refreshes; the emitted value is the latest applied manifest revision and may repeat when OTA payloads change under the same manifest revision.
 - Native OTA override support in phase 1 is limited to `Bundle.main` and the default `Localizable` table.
 - SwiftUI `Text("key")`, `LocalizedStringKey`, and `LocalizedStringResource` are not supported for OTA interception in phase 1; use `NSLocalizedString(...)` inside SwiftUI views instead.

@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 0.6.1 - 2026-07-09
+
+- Reintroduced the app-level runtime locale APIs `reRuneSetLocale(_:)` and `reRuneSelectedLocale` so in-app pickers can switch to dashboard-only locales immediately.
+- Updated the SwiftUI and UIKit examples so the locale picker sets the app language in-place, persists the demo selection, and refreshes visible strings without opening iOS Settings.
+- Fixed the SwiftUI example picker so selecting a menu item immediately updates the selected locale state and rerenders the screen.
+- Expanded the user-facing README and example docs with runtime language picker and selection persistence guidance.
+
 ## 0.6.0 - 2026-07-09
 
 - Removed the SDK-owned locale override APIs `reRuneSetLocale(_:)` and `reRuneSelectedLocale` so ReRune no longer duplicates platform language selection state.

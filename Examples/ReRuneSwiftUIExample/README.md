@@ -18,6 +18,8 @@ This sample demonstrates the local `ReRune` package from this repository using a
 ## Behavior
 
 - App initializes the SDK in `App.init` with the shared demo publish id.
+- App restores the previously selected demo language from `UserDefaults` and applies it with `reRuneSetLocale(_:)`.
 - SwiftUI screens use `NSLocalizedString(...)` for OTA-managed strings and attach `.reRuneObserveRevision()` at the screen level so refresh only redraws visible content.
-- The welcome screen includes pull-to-refresh, status card state, and navigation into the story screen.
+- The welcome screen includes pull-to-refresh, status card state, a picker backed by `reRuneAvailableLocales`, and navigation into the story screen.
+- Selecting a locale updates SwiftUI local state immediately, persists the locale, and calls `reRuneSetLocale(_:)` so dashboard-only languages can render without opening iOS Settings.
 - The story screen includes a manual refresh button to exercise OTA update checks from SwiftUI.
