@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.1 - 2026-07-09
+
+- Republished the binary package metadata so the SwiftPM checksum matches the uploaded `ReRune.xcframework.zip` asset.
+- Aligned the runtime language picker example with the dashboard-delivered German locale scenario.
+- No SDK runtime code changes from `0.5.0`.
+
 ## 0.5.0 - 2026-07-08
 
 - Added runtime locale availability APIs so apps can present `compiled app locales + ReRune manifest locales` through `reRuneAvailableLocales` and `reRuneAvailableLocalesPublisher`.
