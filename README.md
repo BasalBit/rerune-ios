@@ -85,7 +85,7 @@ let locales = reRuneAvailableLocales
 `reRuneAvailableLocalesPublisher` emits when a manifest fetch changes the remote locale list. To switch the SDK runtime language from an in-app picker:
 
 ```swift
-reRuneSetLocale("fr")
+reRuneSetLocale("de")
 ```
 
 Pass `nil` to follow the system preferred language again:
