@@ -26,6 +26,8 @@ ReRune can make dashboard-only languages available even when the app bundle ship
 
 When German is selected with `reRuneSetLocale("de")`, or when German is the user's platform-preferred language, `NSLocalizedString(...)` calls can render the dashboard-delivered German strings after the first successful fetch. On the next launch, `reRuneSetup(...)` restores the cached manifest and German strings before the UI is shown, so the same language can render immediately without a compiled `de.lproj`.
 
+When the requested OTA locale does not contain a key, ReRune next checks the manifest's `main_language` OTA locale before falling back to the app's bundled Foundation localization. The backend owns this fallback; applications do not need another setup parameter. Cached manifests restore the same fallback synchronously on later launches.
+
 This runtime language expansion is app-level. iOS Settings language lists, App Store language metadata, native system strings, and new string keys still require an app release.
 
 ## UIKit quick start
@@ -114,16 +116,30 @@ func selectLocale(_ locale: String?) {
 
 The picker should render `reRuneAvailableLocales`; after a successful manifest fetch, that list can include dashboard-only locales that were not compiled into the app bundle.
 
+## Plural strings
+
+Dashboard plural updates use the same native lookup and formatting calls as bundled `.stringsdict` plurals:
+
+```swift
+let format = NSLocalizedString("item_count", comment: "")
+let text = String.localizedStringWithFormat(format, count)
+```
+
+ReRune supports integer plural categories from direct `.xcstrings` `variations.plural` entries and standard plural substitutions. Malformed or unsupported entries fall back to the app's bundled localization.
+
+Foundation chooses the plural category using the device's current formatting locale. When `reRuneSetLocale(_:)` selects a language whose plural rules differ from the device locale, ReRune selects that language's OTA text but Foundation still chooses its category using the device locale.
+
 ## Notes
 
 - SDK installs a targeted `Bundle.main` localization override so UIKit and Foundation code can keep using native lookup APIs.
 - API auth is `otaPublishId` only.
 - Manifest endpoint is fixed by SDK to `platform=ios_xcstrings`.
-- Manifest parsing is strict: root `version`, keyed `locales`, locale `version`, optional locale `url`.
+- Manifest parsing is strict: root `version`, keyed `locales`, required root `main_language`, locale `version`, and optional locale `url`.
+- `main_language` must normalize to a locale declared in the same manifest. Manifests without it are rejected; an invalid cached manifest and its locale bundles are purged during setup.
 - Locale payloads must be `.xcstrings` catalog JSON.
-- Phase 1 only applies simple `Localizable` key/value entries from the catalog and skips unsupported entry types such as plurals, substitutions, and variations.
+- The default `Localizable` catalog supports simple strings plus integer plural entries; non-plural substitutions and other variation types remain unsupported.
 - Dashboard-only locales appear in `reRuneAvailableLocales` after a successful manifest fetch, or on startup when a cached manifest already lists them.
-- Runtime lookup uses the selected ReRune locale when set, otherwise the platform preferred language. Missing OTA keys fall back to the app default remote locale before bundled strings.
+- Runtime lookup uses the selected ReRune locale when set, otherwise the platform preferred language. Missing OTA keys then use the manifest `main_language` OTA chain before bundled strings.
 - `reRuneRevisionPublisher` is the change notification stream for visible UI refreshes; the emitted value is the latest applied manifest revision and may repeat when OTA payloads change under the same manifest revision.
 - Native OTA override support in phase 1 is limited to `Bundle.main` and the default `Localizable` table.
 - SwiftUI `Text("key")`, `LocalizedStringKey`, and `LocalizedStringResource` are not supported for OTA interception in phase 1; use `NSLocalizedString(...)` inside SwiftUI views instead.

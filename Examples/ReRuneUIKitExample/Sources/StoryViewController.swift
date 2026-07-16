@@ -22,6 +22,21 @@ final class StoryViewController: UIViewController, ReRuneTextRefreshable {
         color: DemoTheme.textSecondary,
         lines: 0
     )
+    private let publishDateLabel = UILabel.demoLabel(
+        font: DemoTheme.roundedFont(size: 16, weight: .semibold),
+        color: DemoTheme.accentPrimary,
+        lines: 0
+    )
+    private let singularKeysLabel = UILabel.demoLabel(
+        font: DemoTheme.roundedFont(size: 16, weight: .semibold),
+        color: DemoTheme.textPrimary,
+        lines: 0
+    )
+    private let pluralKeysLabel = UILabel.demoLabel(
+        font: DemoTheme.roundedFont(size: 16, weight: .semibold),
+        color: DemoTheme.textPrimary,
+        lines: 0
+    )
     private let captionChip = BadgeChipView()
     private let refreshButton = UIButton.demoAccentButton()
 
@@ -48,6 +63,12 @@ final class StoryViewController: UIViewController, ReRuneTextRefreshable {
         titleLabel.text = localized("story_title")
         bodyPrimaryLabel.text = localized("story_body_primary")
         bodySecondaryLabel.text = localized("story_body_secondary")
+        publishDateLabel.text = String(
+            format: localized("publish_date"),
+            Self.publishDateFormatter.string(from: Date())
+        )
+        singularKeysLabel.text = localizedKeyCount(1)
+        pluralKeysLabel.text = localizedKeyCount(2)
         captionChip.update(title: localized("story_caption"))
         updateRefreshButtonState()
     }
@@ -96,7 +117,7 @@ final class StoryViewController: UIViewController, ReRuneTextRefreshable {
         bodyPrimaryLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         bodySecondaryLabel.setContentCompressionResistancePriority(.required, for: .vertical)
 
-        let textStack = UIStackView(arrangedSubviews: [titleLabel, bodyPrimaryLabel, bodySecondaryLabel, captionChip])
+        let textStack = UIStackView(arrangedSubviews: [titleLabel, bodyPrimaryLabel, bodySecondaryLabel, publishDateLabel, singularKeysLabel, pluralKeysLabel, captionChip])
         textStack.axis = .vertical
         textStack.spacing = 16
         textStack.translatesAutoresizingMaskIntoConstraints = false
@@ -155,4 +176,15 @@ final class StoryViewController: UIViewController, ReRuneTextRefreshable {
     private func localized(_ key: String) -> String {
         NSLocalizedString(key, comment: "")
     }
+
+    private func localizedKeyCount(_ count: Int) -> String {
+        String.localizedStringWithFormat(localized("ammount_of_keys"), count)
+    }
+
+    private static let publishDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "dd.MM.yyyy"
+        return formatter
+    }()
 }

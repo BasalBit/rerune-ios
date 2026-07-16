@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>ammount_of_keys</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@keys@</string>
+        <key>keys</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>lld</string>
+            <key>one</key>
+            <string>There is only one key</string>
+            <key>many</key>
+            <string>There are many keys</string>
+            <key>other</key>
+            <string>Not sure how many keys there are</string>
+        </dict>
+    </dict>
+</dict>
+</plist>

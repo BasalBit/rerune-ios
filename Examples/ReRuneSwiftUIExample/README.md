@@ -22,4 +22,5 @@ This sample demonstrates the local `ReRune` package from this repository using a
 - SwiftUI screens use `NSLocalizedString(...)` for OTA-managed strings and attach `.reRuneObserveRevision()` at the screen level so refresh only redraws visible content.
 - The welcome screen includes pull-to-refresh, status card state, a picker backed by `reRuneAvailableLocales`, and navigation into the story screen.
 - Selecting a locale updates SwiftUI local state immediately, persists the locale, and calls `reRuneSetLocale(_:)` so dashboard-only languages can render without opening iOS Settings.
-- The story screen includes a manual refresh button to exercise OTA update checks from SwiftUI.
+- The story screen shows the formatted publish date, count-1/count-2 `ammount_of_keys` plural results, and a manual refresh button.
+- The plural example uses `String.localizedStringWithFormat(NSLocalizedString(...), count)` and falls back to bundled `Localizable.stringsdict` content when OTA has no valid plural.

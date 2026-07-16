@@ -12,5 +12,6 @@
 "story_title" = "Built to adapt";
 "story_body_primary" = "Words change fast. Your app should keep up without waiting for the next release.";
 "story_body_secondary" = "ReRune applies published localization updates directly inside your app experience.";
+"publish_date" = "we did publish on the %1$@";
 "story_caption" = "Live translation content";
 "story_refresh_cta" = "Refresh texts again";

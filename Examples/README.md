@@ -9,3 +9,4 @@ Both example Xcode projects reference the local package at `../..`, so they buil
 
 Both examples use the shared demo OTA publish id in their local `Config/Example.xcconfig` files and target iOS 15+.
 The picker lists `reRuneAvailableLocales`, calls `reRuneSetLocale(_:)`, and demonstrates dashboard-only languages without bundled language resources.
+Both story screens also demonstrate an OTA string placeholder and the `ammount_of_keys` plural through native `String.localizedStringWithFormat(...)`, with bundled `.stringsdict` fallback content.

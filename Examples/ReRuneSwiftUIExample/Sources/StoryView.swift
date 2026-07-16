@@ -36,6 +36,18 @@ struct StoryView: View {
                             .foregroundColor(DemoTheme.textSecondary)
                             .lineSpacing(4)
 
+                        Text(publishDateText)
+                            .font(.system(size: 16, weight: .semibold, design: .rounded))
+                            .foregroundColor(DemoTheme.accentPrimary)
+
+                        Text(localizedKeyCount(1))
+                            .font(.system(size: 16, weight: .semibold, design: .rounded))
+                            .foregroundColor(DemoTheme.textPrimary)
+
+                        Text(localizedKeyCount(2))
+                            .font(.system(size: 16, weight: .semibold, design: .rounded))
+                            .foregroundColor(DemoTheme.textPrimary)
+
                         BadgeChipView(title: localized("story_caption"))
                     }
 
@@ -81,4 +93,22 @@ struct StoryView: View {
     private func localized(_ key: String) -> String {
         NSLocalizedString(key, comment: "")
     }
+
+    private func localizedKeyCount(_ count: Int) -> String {
+        String.localizedStringWithFormat(localized("ammount_of_keys"), count)
+    }
+
+    private var publishDateText: String {
+        String(
+            format: localized("publish_date"),
+            Self.publishDateFormatter.string(from: Date())
+        )
+    }
+
+    private static let publishDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "dd.MM.yyyy"
+        return formatter
+    }()
 }

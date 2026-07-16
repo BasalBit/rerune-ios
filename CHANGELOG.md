@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## 0.7.0 - 2026-07-16
+
+- Added server-owned OTA missing-key fallback through the manifest's required `main_language`, including cached-startup restoration, canonical locale matching, and revision publication when fallback metadata or loaded-locale removal changes visible lookup.
+- Changed the manifest contract incompatibly: manifests without `main_language` are rejected, and an invalid cached manifest plus its associated locale bundles and ETags are purged during setup.
+- Added dashboard-delivered plural overrides for `.xcstrings` payloads while preserving native `NSLocalizedString(...)` plus `String.localizedStringWithFormat(...)` call sites.
+- Added support for direct `variations.plural` entries and standard plural `substitutions`, with cache bootstrap, locale fallback, ETag revalidation, and revision publication for plural-only updates.
+- Added native `.stringsdict` plural fallbacks and visible plural examples to both private example apps.
+- Documented that native Foundation plural category selection follows the device formatting locale; a `reRuneSetLocale(_:)` override that uses materially different plural rules may not select that locale's categories.
+- Kept private example-app OTA configuration out of the public binary repository during release synchronization.
+
 ## 0.6.1 - 2026-07-09
 
 - Reintroduced the app-level runtime locale APIs `reRuneSetLocale(_:)` and `reRuneSelectedLocale` so in-app pickers can switch to dashboard-only locales immediately.

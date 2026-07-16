@@ -16,6 +16,7 @@
 		1A1111111111111111111107 /* DemoTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A1111111111111111111210 /* DemoTheme.swift */; };
 		1A1111111111111111111108 /* BadgeChipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A1111111111111111111211 /* BadgeChipView.swift */; };
 		1A1111111111111111111109 /* StatusCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A1111111111111111111212 /* StatusCardView.swift */; };
+		1A1111111111111111111110 /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = 1A1111111111111111111213 /* Localizable.stringsdict */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +31,7 @@
 		1A1111111111111111111210 /* DemoTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoTheme.swift; sourceTree = "<group>"; };
 		1A1111111111111111111211 /* BadgeChipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeChipView.swift; sourceTree = "<group>"; };
 		1A1111111111111111111212 /* StatusCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusCardView.swift; sourceTree = "<group>"; };
+		1A1111111111111111111213 /* Localizable.stringsdict */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; path = Base.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +81,7 @@
 			isa = PBXGroup;
 			children = (
 				1A1111111111111111111204 /* Localizable.strings */,
+				1A1111111111111111111213 /* Localizable.stringsdict */,
 				1A1111111111111111111207 /* Assets.xcassets */,
 			);
 			path = Resources;
@@ -166,6 +169,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1A1111111111111111111103 /* Localizable.strings in Resources */,
+				1A1111111111111111111110 /* Localizable.stringsdict in Resources */,
 				1A1111111111111111111105 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
