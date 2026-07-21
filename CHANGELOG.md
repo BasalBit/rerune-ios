@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 0.9.0 - 2026-07-21
+
+- Breaking: replaced the previous `none`/`warning`/`debug` logging levels with the cumulative `off`, `error`, `info`, and `verbose` contract; SDK logging now defaults to `off`.
+- Added consistently prefixed request, response, synchronization-decision, and failure diagnostics. Headers, credentials, bodies, failure causes, full request URLs, and stack traces are emitted only through the explicit `verbose` sensitive-data opt-in.
+
 ## 0.8.0 - 2026-07-21
 
 - Added per-locale incremental `.xcstrings` updates through persisted RFC 3339 `updated_at` cursors.

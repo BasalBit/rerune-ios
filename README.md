@@ -76,6 +76,26 @@ struct ContentView: View {
 }
 ```
 
+## Logging
+
+SDK diagnostics are disabled by default. Opt in during setup only when needed:
+
+```swift
+reRuneSetup(
+    otaPublishId: "replace-with-ota-publish-id",
+    logLevel: .info
+)
+```
+
+| Level | Behavior |
+| --- | --- |
+| `.off` | Default. Emits no SDK diagnostics. |
+| `.error` | High-level failures only, without causes or sensitive request/response details. |
+| `.info` | Adds operation names, sanitized request method/URL, synchronization decisions, and response status codes. |
+| `.verbose` | Adds full request URLs, headers, bodies, failure causes, and stack traces. |
+
+Levels are cumulative and every message starts with `ReRune:`. Use `.verbose` only as an explicit sensitive-data diagnostic mode: it may expose the OTA publish ID, credentials, and translation content. Headers, bodies, credentials, causes, and stack traces are never logged below `.verbose`.
+
 ## Runtime language picker
 
 After setup, apps can show the union of compiled bundle locales and ReRune dashboard locales:
