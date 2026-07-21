@@ -134,12 +134,16 @@ Foundation chooses the plural category using the device's current formatting loc
 - SDK installs a targeted `Bundle.main` localization override so UIKit and Foundation code can keep using native lookup APIs.
 - API auth is `otaPublishId` only.
 - Manifest endpoint is fixed by SDK to `platform=ios_xcstrings`.
-- Manifest parsing is strict: root `version`, keyed `locales`, required root `main_language`, locale `version`, and optional locale `url`.
+- Manifest parsing is strict: root and locale `version` values are non-negative JSON integers; `locales` is keyed; `main_language` is required; and locale `url` is optional.
+- Manifest locale keys and `main_language` must use `language[-Script][-REGION]`, where language is 2–3 ASCII letters, script is 4 ASCII letters, and region is either 2 ASCII letters or 3 digits. `_` separators and surrounding whitespace are normalized.
+- Every manifest locale requires a non-negative `minimum_delta_base_version`. Exact version/minimum matches skip that locale; a minimum change forces a cursorless full replacement; otherwise changed versions use the locale's persisted RFC 3339 `updated_at` cursor for a delta request.
+- ETag revalidation applies only to the manifest. Locale requests never send `If-None-Match`, and a locale `304` is treated as an unsupported per-locale failure that preserves cached state.
 - `main_language` must normalize to a locale declared in the same manifest. Manifests without it are rejected; an invalid cached manifest and its locale bundles are purged during setup.
 - Locale payloads must be `.xcstrings` catalog JSON.
 - The default `Localizable` catalog supports simple strings plus integer plural entries; non-plural substitutions and other variation types remain unsupported.
 - Dashboard-only locales appear in `reRuneAvailableLocales` after a successful manifest fetch, or on startup when a cached manifest already lists them.
 - Runtime lookup uses the selected ReRune locale when set, otherwise the platform preferred language. Missing OTA keys then use the manifest `main_language` OTA chain before bundled strings.
+- `reRuneSetup(...)` restores and parses the local cache synchronously so cached strings are immediately available. Its startup network check runs in a detached Swift-concurrency task and does not delay setup completion.
 - `reRuneRevisionPublisher` is the change notification stream for visible UI refreshes; the emitted value is the latest applied manifest revision and may repeat when OTA payloads change under the same manifest revision.
 - Native OTA override support in phase 1 is limited to `Bundle.main` and the default `Localizable` table.
 - SwiftUI `Text("key")`, `LocalizedStringKey`, and `LocalizedStringResource` are not supported for OTA interception in phase 1; use `NSLocalizedString(...)` inside SwiftUI views instead.

@@ -2,6 +2,24 @@
 
 ## Unreleased
 
+## 0.8.0 - 2026-07-21
+
+- Added per-locale incremental `.xcstrings` updates through persisted RFC 3339 `updated_at` cursors.
+- Added atomic whole-entry batch merging into the complete cached locale catalog, including cursor-safe failure handling and no-op batch suppression.
+- Breaking: locale requests and cache records no longer use ETags; manifest ETag revalidation remains unchanged.
+- Breaking: locale cache records now require an `updatedAtCursor`; records written by earlier SDK versions are rejected and must be repopulated from a fresh full locale response.
+- Breaking: every manifest locale now requires `minimum_delta_base_version`, and every locale cache record requires `minimumDeltaBaseVersion`; a changed per-locale minimum forces a cursorless full fetch and complete cache replacement.
+- Accepted `minimum_delta_base_version` values greater than or equal to zero while retaining exact-equality synchronization checks.
+- Breaking: locale cache records now require the last successfully applied manifest locale `version`; matching versions skip locale requests, while changed versions remain eligible for retry until a valid response is applied.
+- Added runtime and disk-cache cleanup for locales removed from the manifest.
+- Fixed `304` handling so an uncached manifest response fails explicitly and an unexpected locale response reports a specific error without advancing locale synchronization state.
+- Fixed cache commit handling so manifest write failures stop synchronization without changing manifest state, while locale write failures preserve that locale's runtime and synchronization state and do not stop remaining locales.
+- Fixed locale no-change detection to compare parsed runtime translations, so unsupported catalog data, irrelevant localizations, and entry metadata changes still advance synchronization state without publishing a visible update.
+- Breaking: root and per-locale manifest versions must now be non-negative JSON integers. Applied locale versions are persisted as integers, and locale cache records containing string or otherwise invalid versions are rejected.
+- Made unpublished-locale disk cleanup explicitly best-effort: listing and deletion failures are logged without failing synchronization, while cleanup is retried during later bootstrap and manifest application.
+- Breaking: SDK-controlled locale identifiers must now use the common `language[-Script][-REGION]` subset. Malformed identifiers, variants, extensions, private-use tags, non-ASCII components, and unsafe path characters are rejected.
+- Kept cache restoration synchronous for immediate startup lookup while explicitly detaching startup and periodic network synchronization so `reRuneSetup(...)` never waits for network completion.
+
 ## 0.7.0 - 2026-07-16
 
 - Added server-owned OTA missing-key fallback through the manifest's required `main_language`, including cached-startup restoration, canonical locale matching, and revision publication when fallback metadata or loaded-locale removal changes visible lookup.
