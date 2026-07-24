@@ -102,9 +102,12 @@ After setup, apps can show the union of compiled bundle locales and ReRune dashb
 
 ```swift
 let locales = reRuneAvailableLocales
+let localeDetails = reRuneAvailableLocaleDetails
 ```
 
-`reRuneAvailableLocalesPublisher` emits when a manifest fetch changes the remote locale list. To switch the SDK runtime language from an in-app picker:
+`reRuneAvailableLocalesPublisher` emits identifier-list changes.
+`reRuneAvailableLocaleDetailsPublisher` also emits manifest display-name
+changes. To switch the SDK runtime language from an in-app picker:
 
 ```swift
 reRuneSetLocale("de")
@@ -134,7 +137,19 @@ func selectLocale(_ locale: String?) {
 }
 ```
 
-The picker should render `reRuneAvailableLocales`; after a successful manifest fetch, that list can include dashboard-only locales that were not compiled into the app bundle.
+The picker can render `reRuneAvailableLocaleDetails`; each `ReRuneLocale`
+contains an `identifier` and nullable manifest-provided `name`. Compiled-only
+locales use their identifier as the name. The existing
+`reRuneAvailableLocales` API remains available when only identifiers are needed.
+
+```swift
+ForEach(reRuneAvailableLocaleDetails, id: \.identifier) { locale in
+    Text(locale.name ?? locale.identifier)
+}
+```
+
+After a dashboard-only locale is successfully applied, both lists can include
+it even when it was not compiled into the app bundle.
 
 ## Plural strings
 
@@ -156,12 +171,15 @@ Foundation chooses the plural category using the device's current formatting loc
 - Manifest endpoint is fixed by SDK to `platform=ios_xcstrings`.
 - Manifest parsing is strict: root and locale `version` values are non-negative JSON integers; `locales` is keyed; `main_language` is required; and locale `url` is optional.
 - Manifest locale keys and `main_language` must use `language[-Script][-REGION]`, where language is 2–3 ASCII letters, script is 4 ASCII letters, and region is either 2 ASCII letters or 3 digits. `_` separators and surrounding whitespace are normalized.
-- Every manifest locale requires a non-negative `minimum_delta_base_version`. Exact version/minimum matches skip that locale; a minimum change forces a cursorless full replacement; otherwise changed versions use the locale's persisted RFC 3339 `updated_at` cursor for a delta request.
+- Every manifest locale requires a non-negative `minimum_delta_base_version`. Exact version/minimum matches skip that locale. A missing cache record or minimum change requests a full replacement with `target_version`; otherwise changed versions request a delta with the stored successful `version` and the manifest `target_version`.
+- Locale `409` responses and manifests whose locale target is behind the stored successful version are treated as stale-manifest signals. ReRune retries the complete synchronization once after fetching the manifest without `If-None-Match`, then returns `.failed` if the refreshed state is still stale.
 - ETag revalidation applies only to the manifest. Locale requests never send `If-None-Match`, and a locale `304` is treated as an unsupported per-locale failure that preserves cached state.
 - `main_language` must normalize to a locale declared in the same manifest. Manifests without it are rejected; an invalid cached manifest and its locale bundles are purged during setup.
 - Locale payloads must be `.xcstrings` catalog JSON.
 - The default `Localizable` catalog supports simple strings plus integer plural entries; non-plural substitutions and other variation types remain unsupported.
-- Dashboard-only locales appear in `reRuneAvailableLocales` after a successful manifest fetch, or on startup when a cached manifest already lists them.
+- Dashboard-only locales appear in `reRuneAvailableLocales` only after their locale payload and manifest metadata are successfully committed, or on startup when a valid applied-locale cache record restores them.
+- Each successful locale commit stores the manifest entry's `name`, `url`, `version`, and `minimum_delta_base_version` with the payload. A failed locale retains its previous applied metadata; the cached raw manifest remains only the transport snapshot used for later retries.
+- `reRuneAvailableLocaleDetails` and `reRuneAvailableLocaleDetailsPublisher` expose normalized locale identifiers plus nullable successfully applied manifest names. Equal-version name-only changes are persisted without calling the locale endpoint and publish the manifest revision.
 - Runtime lookup uses the selected ReRune locale when set, otherwise the platform preferred language. Missing OTA keys then use the manifest `main_language` OTA chain before bundled strings.
 - `reRuneSetup(...)` restores and parses the local cache synchronously so cached strings are immediately available. Its startup network check runs in a detached Swift-concurrency task and does not delay setup completion.
 - `reRuneRevisionPublisher` is the change notification stream for visible UI refreshes; the emitted value is the latest applied manifest revision and may repeat when OTA payloads change under the same manifest revision.

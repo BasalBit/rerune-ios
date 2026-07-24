@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+## 0.10.0 - 2026-07-24
+
+- Breaking: replaced RFC 3339 `updated_at` locale cursors with version-targeted requests. Full requests send `target_version`; delta requests send the last successfully stored locale `version` plus `target_version`; equal locale versions still skip the request.
+- Added stale-manifest recovery: locale `409` responses and manifest targets below a stored successful locale version restart synchronization once with an unconditional manifest fetch, then return a terminal failure if the refreshed manifest is still stale.
+- Removed `updatedAtCursor` from locale cache records. Existing records may contain the obsolete extra JSON key, but it is ignored and never affects requests.
+- Added nullable manifest locale names through `ReRuneLocale`, `reRuneAvailableLocaleDetails`, and `reRuneAvailableLocaleDetailsPublisher`. Compiled-only locales use their identifier as the fallback name, and name-only manifest changes publish a revision.
+- Locale cache records now persist the manifest entry's nullable `name` and optional `url` with its version, minimum delta base, and payload. New or changed locale metadata becomes applied/public only after the locale record commits successfully; failures retain the previous applied metadata.
+- Enabled verbose SDK logging in both iOS example apps.
+
 ## 0.9.0 - 2026-07-21
 
 - Breaking: replaced the previous `none`/`warning`/`debug` logging levels with the cumulative `off`, `error`, `info`, and `verbose` contract; SDK logging now defaults to `off`.

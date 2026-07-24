@@ -15,8 +15,8 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: "ReRune",
-            url: "https://github.com/BasalBit/rerune-ios/releases/download/0.9.0/ReRune.xcframework.zip",
-            checksum: "94eea810e559f6f86213a995a50b623ebed64feef26cc6a9b8a88973e86419b8"
+            url: "https://github.com/BasalBit/rerune-ios/releases/download/0.10.0/ReRune.xcframework.zip",
+            checksum: "cf65f0805a2e14f69f0af72cf007dd0bc0d41e3e1be270a884e53622fff8e775"
         )
     ]
 )

@@ -8,7 +8,7 @@ struct ReRuneSwiftUIExampleApp: App {
         let publishId = Bundle.main.object(forInfoDictionaryKey: "RERUNE_OTA_PUBLISH_ID") as? String
             ?? ProcessInfo.processInfo.environment["RERUNE_OTA_PUBLISH_ID"]
             ?? "replace-with-ota-publish-id"
-        reRuneSetup(otaPublishId: publishId)
+        reRuneSetup(otaPublishId: publishId, logLevel: .verbose)
         reRuneSetLocale(UserDefaults.standard.string(forKey: "rerune.example.selectedLocale"))
 
         UINavigationBar.appearance().tintColor = UIColor(
