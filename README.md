@@ -160,7 +160,25 @@ let format = NSLocalizedString("item_count", comment: "")
 let text = String.localizedStringWithFormat(format, count)
 ```
 
-ReRune supports integer plural categories from direct `.xcstrings` `variations.plural` entries and standard plural substitutions. Malformed or unsupported entries fall back to the app's bundled localization.
+ReRune derives native cardinal plurals from the backend's generic structured
+message records. The plural-control value remains the first native formatting
+argument; displayed placeholders follow it as independent arguments.
+
+For example, a message controlled by `count` that displays `firstName` and
+`itemCount` keeps the normal Foundation call:
+
+```swift
+let format = NSLocalizedString("inventory_summary", comment: "")
+let text = String.localizedStringWithFormat(
+    format,
+    count,
+    firstName,
+    itemCount
+)
+```
+
+Malformed or unsupported rendering records reject that locale update and keep
+the previously applied or bundled localization.
 
 Foundation chooses the plural category using the device's current formatting locale. When `reRuneSetLocale(_:)` selects a language whose plural rules differ from the device locale, ReRune selects that language's OTA text but Foundation still chooses its category using the device locale.
 
@@ -168,17 +186,38 @@ Foundation chooses the plural category using the device's current formatting loc
 
 - SDK installs a targeted `Bundle.main` localization override so UIKit and Foundation code can keep using native lookup APIs.
 - API auth is `otaPublishId` only.
-- Manifest endpoint is fixed by SDK to `platform=ios_xcstrings`.
-- Manifest parsing is strict: root and locale `version` values are non-negative JSON integers; `locales` is keyed; `main_language` is required; and locale `url` is optional.
+- Manifest endpoint is fixed by SDK and has no platform query parameter.
+- Manifest parsing is strict: root and locale `version` values are non-negative JSON integers; `locales` is keyed; `main_language` is required; and every locale has an absolute `url`.
 - Manifest locale keys and `main_language` must use `language[-Script][-REGION]`, where language is 2–3 ASCII letters, script is 4 ASCII letters, and region is either 2 ASCII letters or 3 digits. `_` separators and surrounding whitespace are normalized.
 - Every manifest locale requires a non-negative `minimum_delta_base_version`. Exact version/minimum matches skip that locale. A missing cache record or minimum change requests a full replacement with `target_version`; otherwise changed versions request a delta with the stored successful `version` and the manifest `target_version`.
 - Locale `409` responses and manifests whose locale target is behind the stored successful version are treated as stale-manifest signals. ReRune retries the complete synchronization once after fetching the manifest without `If-None-Match`, then returns `.failed` if the refreshed state is still stale.
 - ETag revalidation applies only to the manifest. Locale requests never send `If-None-Match`, and a locale `304` is treated as an unsupported per-locale failure that preserves cached state.
 - `main_language` must normalize to a locale declared in the same manifest. Manifests without it are rejected; an invalid cached manifest and its locale bundles are purged during setup.
-- Locale payloads must be `.xcstrings` catalog JSON.
-- The default `Localizable` catalog supports simple strings plus integer plural entries; non-plural substitutions and other variation types remain unsupported.
+- Each locale URL returns a top-level array of locale-scoped generic translation
+  records. Every record has a `values` array containing zero or one entry.
+  `values: []` is preserved in cache but supplies no runtime override, so lookup
+  continues through the main-language and bundled fallback chain. Plain
+  `value` messages and structured cardinal plurals are supported when one entry
+  is present.
+- A delta record with `values: []` replaces the cached record and removes any
+  previous runtime override for that key. Records omitted from a delta retain
+  their cached state. A one-entry record with `value: ""` remains an intentional
+  empty translation and does not fall back.
+- Placeholder tokens use `{{name}}`. Names are case-sensitive; `string` and
+  `int` declaration types are case-insensitive; multiple placeholders are
+  supported.
+- A visible token without an exact matching declaration makes only that plain
+  or plural key unavailable remotely. ReRune still caches the complete record
+  and continues through the normal locale, main-language, and bundled fallback
+  chain. In a delta, that replacement also removes any previous override.
+- Other malformed declarations, token syntax, or rendering structures still
+  reject the locale atomically. Unknown non-rendering fields are preserved and
+  ignored at runtime.
 - Dashboard-only locales appear in `reRuneAvailableLocales` only after their locale payload and manifest metadata are successfully committed, or on startup when a valid applied-locale cache record restores them.
-- Each successful locale commit stores the manifest entry's `name`, `url`, `version`, and `minimum_delta_base_version` with the payload. A failed locale retains its previous applied metadata; the cached raw manifest remains only the transport snapshot used for later retries.
+- Each successful locale commit stores the manifest entry's `name`, `url`, `version`, and `minimum_delta_base_version` with a complete canonical generic JSON snapshot. A failed locale retains its previous applied metadata; the cached raw manifest remains only the transport snapshot used for later retries.
+- This breaking cache schema uses a new namespace. Legacy platform-specific
+  cache entries are not read, migrated, or deleted, so the first launch after
+  upgrading behaves like a cold OTA cache.
 - `reRuneAvailableLocaleDetails` and `reRuneAvailableLocaleDetailsPublisher` expose normalized locale identifiers plus nullable successfully applied manifest names. Equal-version name-only changes are persisted without calling the locale endpoint and publish the manifest revision.
 - Runtime lookup uses the selected ReRune locale when set, otherwise the platform preferred language. Missing OTA keys then use the manifest `main_language` OTA chain before bundled strings.
 - `reRuneSetup(...)` restores and parses the local cache synchronously so cached strings are immediately available. Its startup network check runs in a detached Swift-concurrency task and does not delay setup completion.

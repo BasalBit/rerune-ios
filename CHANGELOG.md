@@ -2,6 +2,35 @@
 
 ## Unreleased
 
+## 0.11.0 - 2026-07-27
+
+- Breaking: replaced the iOS String Catalog transport with locale-scoped,
+  platform-agnostic JSON records while preserving native
+  `NSLocalizedString`, `String(format:_:)`, and
+  `String.localizedStringWithFormat` call sites.
+- Breaking: removed the manifest `platform=ios_xcstrings` query and the
+  hardcoded `ios_xcstrings/{locale}` fallback. Every manifest locale now
+  requires an absolute `url`.
+- Added strict locale-atomic validation for plain messages, named
+  `{{placeholder}}` tokens, case-insensitive `string`/`int` declaration types,
+  and structured cardinal plurals with an independent control argument.
+- Changed delta persistence to replace complete generic records by key while
+  preserving omitted records and unknown non-rendering fields. Full responses
+  remain authoritative complete snapshots.
+- Added untranslated locale records: `values: []` is preserved in canonical
+  cache state without creating a runtime override. In deltas it replaces the
+  cached record and removes an earlier override, while `value: ""` remains an
+  intentional empty translation.
+- Changed placeholder token/declaration name mismatches to fail only that plain
+  or plural key's runtime projection. The complete backend record is cached,
+  deltas remove any earlier override for the key, and normal localization
+  fallback continues; other structural validation remains locale-atomic.
+- Breaking: moved locale persistence to the new `ReRuneGenericV1` cache
+  namespace, requires the applied locale URL in each cache record, and does not
+  read, migrate, or delete legacy platform-specific cache entries.
+- Deferred a public custom cache-store API and literal double-brace escaping;
+  both remain internal/backend contract follow-up work.
+
 ## 0.10.0 - 2026-07-24
 
 - Breaking: replaced RFC 3339 `updated_at` locale cursors with version-targeted requests. Full requests send `target_version`; delta requests send the last successfully stored locale `version` plus `target_version`; equal locale versions still skip the request.
