@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+## 0.13.0 - 2026-07-28
+
+- Restored the MIT License for the current SDK and public binary package.
+- Restored the historical `0.2.1` through `0.11.0` public tags and binary
+  releases under the MIT licenses included in those tags. Version `0.12.0`
+  retains the proprietary license included in its tagged release.
+- Upgraded repository checkout and GitHub release automation to their Node
+  24-compatible action versions. This changes release infrastructure only; the
+  SDK runtime and public API are unchanged.
+- No SDK runtime or public API changes from `0.12.0`.
+
 ## 0.12.0 - 2026-07-28
 
 - Changed this release from the MIT License to BasalBit GmbH's proprietary

@@ -22,9 +22,7 @@ import ReRune
 
 ## License
 
-ReRune is proprietary software. Use requires explicit authorization through a
-separate written agreement with BasalBit GmbH. See [LICENSE](LICENSE) and
-[commercial terms](https://rerune.io/terms).
+ReRune is available under the [MIT License](LICENSE).
 
 ## Remote languages without an app release
 
