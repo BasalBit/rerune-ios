@@ -20,6 +20,12 @@ Then import:
 import ReRune
 ```
 
+## License
+
+ReRune is proprietary software. Use requires explicit authorization through a
+separate written agreement with BasalBit GmbH. See [LICENSE](LICENSE) and
+[commercial terms](https://rerune.io/terms).
+
 ## Remote languages without an app release
 
 ReRune can make dashboard-only languages available even when the app bundle shipped with only English resources. For example, if the app has only `en` bundled strings and the ReRune dashboard later publishes German (`de`), the SDK fetches the German manifest entry and locale payload in the background, caches it, and exposes `de` through `reRuneAvailableLocales`.

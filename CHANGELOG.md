@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 0.12.0 - 2026-07-28
+
+- Changed this release from the MIT License to BasalBit GmbH's proprietary
+  commercial license. Previously published versions retain the license files
+  included in their tagged releases.
+- No SDK runtime or public API changes from `0.11.0`.
+
 ## 0.11.0 - 2026-07-27
 
 - Breaking: replaced the iOS String Catalog transport with locale-scoped,
