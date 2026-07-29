@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-## 0.13.1 - 2026-07-29
+## 0.13.1 (2026-07-29)
 
 - Removed dSYMs, ABI JSON, and private/package Swift interface variants from
   the public XCFramework while retaining the public module interface required
@@ -14,7 +14,7 @@
 - Improved the public package description and search-oriented README metadata.
 - No SDK runtime or public API changes from `0.13.0`.
 
-## 0.13.0 - 2026-07-28
+## 0.13.0 (2026-07-28)
 
 - Restored the MIT License for the current SDK and public binary package.
 - Restored the historical `0.2.1` through `0.11.0` public tags and binary
@@ -25,14 +25,14 @@
   SDK runtime and public API are unchanged.
 - No SDK runtime or public API changes from `0.12.0`.
 
-## 0.12.0 - 2026-07-28
+## 0.12.0 (2026-07-28)
 
 - Changed this release from the MIT License to BasalBit GmbH's proprietary
   commercial license. Previously published versions retain the license files
   included in their tagged releases.
 - No SDK runtime or public API changes from `0.11.0`.
 
-## 0.11.0 - 2026-07-27
+## 0.11.0 (2026-07-27)
 
 - Breaking: replaced the iOS String Catalog transport with locale-scoped,
   platform-agnostic JSON records while preserving native
@@ -61,7 +61,7 @@
 - Deferred a public custom cache-store API and literal double-brace escaping;
   both remain internal/backend contract follow-up work.
 
-## 0.10.0 - 2026-07-24
+## 0.10.0 (2026-07-24)
 
 - Breaking: replaced RFC 3339 `updated_at` locale cursors with version-targeted requests. Full requests send `target_version`; delta requests send the last successfully stored locale `version` plus `target_version`; equal locale versions still skip the request.
 - Added stale-manifest recovery: locale `409` responses and manifest targets below a stored successful locale version restart synchronization once with an unconditional manifest fetch, then return a terminal failure if the refreshed manifest is still stale.
@@ -70,12 +70,12 @@
 - Locale cache records now persist the manifest entry's nullable `name` and optional `url` with its version, minimum delta base, and payload. New or changed locale metadata becomes applied/public only after the locale record commits successfully; failures retain the previous applied metadata.
 - Enabled verbose SDK logging in both iOS example apps.
 
-## 0.9.0 - 2026-07-21
+## 0.9.0 (2026-07-21)
 
 - Breaking: replaced the previous `none`/`warning`/`debug` logging levels with the cumulative `off`, `error`, `info`, and `verbose` contract; SDK logging now defaults to `off`.
 - Added consistently prefixed request, response, synchronization-decision, and failure diagnostics. Headers, credentials, bodies, failure causes, full request URLs, and stack traces are emitted only through the explicit `verbose` sensitive-data opt-in.
 
-## 0.8.0 - 2026-07-21
+## 0.8.0 (2026-07-21)
 
 - Added per-locale incremental `.xcstrings` updates through persisted RFC 3339 `updated_at` cursors.
 - Added atomic whole-entry batch merging into the complete cached locale catalog, including cursor-safe failure handling and no-op batch suppression.
@@ -93,7 +93,7 @@
 - Breaking: SDK-controlled locale identifiers must now use the common `language[-Script][-REGION]` subset. Malformed identifiers, variants, extensions, private-use tags, non-ASCII components, and unsafe path characters are rejected.
 - Kept cache restoration synchronous for immediate startup lookup while explicitly detaching startup and periodic network synchronization so `reRuneSetup(...)` never waits for network completion.
 
-## 0.7.0 - 2026-07-16
+## 0.7.0 (2026-07-16)
 
 - Added server-owned OTA missing-key fallback through the manifest's required `main_language`, including cached-startup restoration, canonical locale matching, and revision publication when fallback metadata or loaded-locale removal changes visible lookup.
 - Changed the manifest contract incompatibly: manifests without `main_language` are rejected, and an invalid cached manifest plus its associated locale bundles and ETags are purged during setup.
@@ -103,58 +103,58 @@
 - Documented that native Foundation plural category selection follows the device formatting locale; a `reRuneSetLocale(_:)` override that uses materially different plural rules may not select that locale's categories.
 - Kept private example-app OTA configuration out of the public binary repository during release synchronization.
 
-## 0.6.1 - 2026-07-09
+## 0.6.1 (2026-07-09)
 
 - Reintroduced the app-level runtime locale APIs `reRuneSetLocale(_:)` and `reRuneSelectedLocale` so in-app pickers can switch to dashboard-only locales immediately.
 - Updated the SwiftUI and UIKit examples so the locale picker sets the app language in-place, persists the demo selection, and refreshes visible strings without opening iOS Settings.
 - Fixed the SwiftUI example picker so selecting a menu item immediately updates the selected locale state and rerenders the screen.
 - Expanded the user-facing README and example docs with runtime language picker and selection persistence guidance.
 
-## 0.6.0 - 2026-07-09
+## 0.6.0 (2026-07-09)
 
 - Removed the SDK-owned locale override APIs `reRuneSetLocale(_:)` and `reRuneSelectedLocale` so ReRune no longer duplicates platform language selection state.
 - Kept dashboard manifest locales available through `reRuneAvailableLocales` and `reRuneAvailableLocalesPublisher`.
 - Updated runtime lookup to follow the platform preferred language only, falling back to the app default remote locale and then bundled strings.
 - Updated the SwiftUI and UIKit examples to present available locales in a native picker that opens iOS Settings instead of setting a ReRune-owned locale override.
 
-## 0.5.1 - 2026-07-09
+## 0.5.1 (2026-07-09)
 
 - Republished the public binary package metadata so the SwiftPM checksum matches the uploaded `ReRune.xcframework.zip` asset.
 - Aligned the runtime language picker examples with the dashboard-delivered German locale scenario.
 - No SDK runtime code changes from `0.5.0`.
 
-## 0.5.0 - 2026-07-08
+## 0.5.0 (2026-07-08)
 
 - Added runtime locale availability APIs so apps can present `compiled app locales + ReRune manifest locales` through `reRuneAvailableLocales` and `reRuneAvailableLocalesPublisher`.
 - Added `reRuneSetLocale(_:)` and `reRuneSelectedLocale` so an in-app picker can select a dashboard-only locale without requiring that locale to be compiled into the app bundle.
 - Updated OTA lookup fallback to use the selected locale, or the system preferred locale when no override is selected, then fall back to the app default remote locale before bundled strings.
 - Documented the remote-language expansion use case where an English-only app can render a dashboard-delivered German locale after the manifest and locale payload are fetched and cached.
 
-## 0.4.0 - 2026-04-13
+## 0.4.0 (2026-04-13)
 
 - Switched the fixed iOS OTA platform from `ios_localizable_strings` to `ios_xcstrings` and removed OTA compatibility with flat `.strings` locale payloads.
 - Changed locale payload parsing to require `.xcstrings` catalog JSON, applying only simple `Localizable` key/value entries and skipping unsupported catalog features such as plurals, substitutions, and variations.
 - Changed `reRuneCheckForUpdates()` to continue OTA fetches even when the calling SwiftUI refresh task is cancelled, and updated SwiftUI guidance/examples to observe revision changes at the screen level.
 
-## 0.3.0 - 2026-04-09
+## 0.3.0 (2026-04-09)
 
 - Switched the iOS SDK from explicit `reRuneString(...)` lookups to native-first `Bundle.main` interception for `Localizable.strings`, so UIKit and Foundation call sites can keep using `NSLocalizedString(...)` and `Bundle.localizedString(...)`.
 - Removed the public cache customization surface and synchronous explicit lookup API from the public SDK so setup can restore cached OTA strings before returning.
 - Updated tests, examples, and docs to treat `Bundle.main` / `NSLocalizedString(...)` as the primary integration path and to document the phase-1 SwiftUI `Text("key")` limitation.
 
-## 0.2.2 - 2026-04-04
+## 0.2.2 (2026-04-04)
 
 - Expanded the public binary repo README to include the same UIKit and SwiftUI integration quick starts as the source SDK README.
 - Fixed XCFramework packaging so the released binary embeds the generated `Modules/ReRune.swiftmodule` metadata required for `import ReRune`, and made the packaging script fail fast when module files are missing.
 
-## 0.2.1 - 2026-03-30
+## 0.2.1 (2026-03-30)
 
 - Replaced the static `ReRune.*` namespace API with top-level `reRune*` entry points so the `ReRune` module can be distributed as a stable binary XCFramework.
 - Lowered the customer SDK and example minimum iOS version to iOS 15 and moved the SwiftUI example back to iOS-15-compatible navigation APIs.
 - Added `Examples/ReRuneExamples.xcworkspace` as the single entry point for both the UIKit and SwiftUI demo apps.
 - Added release automation for the public binary package repo `BasalBit/rerune-ios`, including XCFramework packaging, public repo syncing, and compatibility guards for the iOS 15 floor.
 
-## 0.2.0 - 2026-03-28
+## 0.2.0 (2026-03-28)
 
 - Merged the SwiftUI helper into the main SDK and renamed the Swift package product/module from `ReRuneCore` / `ReRuneSwiftUI` to a single `ReRune` import.
 - Switched the fixed iOS OTA codec from `platform=ios` to `platform=ios_localizable_strings` and aligned fallback locale requests with `/sdk/translations/ios_localizable_strings/{locale}`.
