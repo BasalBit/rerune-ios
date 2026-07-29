@@ -4,19 +4,30 @@ ReRune is an over-the-air localization SDK for iOS. Ship translation updates
 and dashboard-managed app languages without waiting for another App Store
 release, while keeping native `NSLocalizedString` and SwiftUI integration.
 
+[Start for free](https://rerune.io/register) ·
 [Website](https://rerune.io) ·
-[Swift Package](https://github.com/BasalBit/rerune-ios) ·
 [Releases](https://github.com/BasalBit/rerune-ios/releases)
+
+![ReRune for iOS — OTA localization for native apps](Assets/rerune-ios-social-preview.png)
 
 ![Swift Package Manager](https://img.shields.io/badge/Swift_Package_Manager-compatible-orange)
 ![iOS 15+](https://img.shields.io/badge/iOS-15%2B-blue)
 ![MIT License](https://img.shields.io/badge/license-MIT-green)
 
-## Requirements
+## Why ReRune?
 
-- iOS 15+
+- **Release-independent copy:** publish approved translation updates without
+  waiting for another App Store release.
+- **Runtime language expansion:** add dashboard-managed app languages after the
+  application has shipped.
+- **Native integration:** keep `NSLocalizedString`, UIKit, and SwiftUI revision
+  observation instead of replacing the application's localization layer.
+
+`ReRune dashboard → OTA publish → ReRune iOS SDK → native app localization`
 
 ## Install (SPM)
+
+Requires iOS 15 or later.
 
 Add this package dependency in Xcode:
 
@@ -29,10 +40,6 @@ Then import:
 ```swift
 import ReRune
 ```
-
-## License
-
-ReRune is available under the [MIT License](LICENSE).
 
 ## Remote languages without an app release
 
@@ -250,3 +257,7 @@ Open `Examples/ReRuneExamples.xcworkspace` to try both demo apps:
 Both examples use the same demo OTA publish id.
 
 They mirror the welcome/story demo flows kept in the source repo examples while consuming the published package instead of the local workspace package.
+
+## License
+
+ReRune is available under the [MIT License](LICENSE).
