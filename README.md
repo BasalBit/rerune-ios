@@ -1,6 +1,16 @@
-# rerune-ios
+# ReRune for iOS
 
-Public Swift Package Manager repository for the ReRune iOS SDK.
+ReRune is an over-the-air localization SDK for iOS. Ship translation updates
+and dashboard-managed app languages without waiting for another App Store
+release, while keeping native `NSLocalizedString` and SwiftUI integration.
+
+[Website](https://rerune.io) ·
+[Swift Package](https://github.com/BasalBit/rerune-ios) ·
+[Releases](https://github.com/BasalBit/rerune-ios/releases)
+
+![Swift Package Manager](https://img.shields.io/badge/Swift_Package_Manager-compatible-orange)
+![iOS 15+](https://img.shields.io/badge/iOS-15%2B-blue)
+![MIT License](https://img.shields.io/badge/license-MIT-green)
 
 ## Requirements
 

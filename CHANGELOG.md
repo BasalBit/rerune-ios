@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+## 0.13.1 - 2026-07-29
+
+- Removed dSYMs, ABI JSON, and private/package Swift interface variants from
+  the public XCFramework while retaining the public module interface required
+  by consumers.
+- Added release-time checks that reject maintainer-only metadata and absolute
+  local build paths in the public binary artifact.
+- Retained device and simulator dSYMs in private source-repository release
+  storage for crash symbolication instead of publishing them to consumers.
+- Improved the public package description and search-oriented README metadata.
+- No SDK runtime or public API changes from `0.13.0`.
+
 ## 0.13.0 - 2026-07-28
 
 - Restored the MIT License for the current SDK and public binary package.
