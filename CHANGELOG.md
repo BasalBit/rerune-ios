@@ -2,6 +2,24 @@
 
 ## Unreleased
 
+## 1.0.0 (2026-08-05)
+
+- Refreshed the public Swift package landing page with an outcome-oriented
+  introduction, a dashboard-to-app delivery summary, and ReRune-branded social
+  preview artwork derived from the live website visual language.
+- Updated release synchronization so public package visual assets are retained
+  across future binary SDK releases.
+- Added a guarded manual publishing command and maintainer protocol that check
+  release versioning, changelog preparation, synchronized Git state, GitHub
+  release infrastructure, exact-commit compatibility results, operator
+  attestations, public artifact checksums, and private debug-symbol retention.
+- Added release-workflow validation that rejects malformed or unprepared source
+  tags before building a customer XCFramework.
+- Extended publishing guards and release automation to support stable semantic
+  versions. Stable breaking changes require a major version bump.
+- Declared the current SDK contract stable as version `1.0.0`.
+- No SDK runtime or public API changes.
+
 ## 0.13.1 (2026-07-29)
 
 - Removed dSYMs, ABI JSON, and private/package Swift interface variants from
