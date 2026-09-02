@@ -3,6 +3,7 @@ import SwiftUI
 struct StatusCardView: View {
     let rows: [(label: String, value: String)]
     var localePicker: LocalePickerRow? = nil
+    var variantToggle: VariantToggleRow? = nil
 
     var body: some View {
         VStack(spacing: 0) {
@@ -36,6 +37,40 @@ struct StatusCardView: View {
                         }
                         .foregroundColor(DemoTheme.textPrimary)
                     }
+                }
+                .padding(.vertical, 18)
+
+                if variantToggle != nil || !rows.isEmpty {
+                    Rectangle()
+                        .fill(DemoTheme.borderSubtle)
+                        .frame(height: 1)
+                }
+            }
+
+            if let variantToggle {
+                HStack(spacing: 16) {
+                    Text(variantToggle.label)
+                        .font(.system(size: 14, weight: .semibold, design: .rounded))
+                        .foregroundColor(DemoTheme.textSecondary)
+
+                    Spacer(minLength: 12)
+
+                    Text(variantToggle.value)
+                        .font(.system(size: 15, weight: .semibold, design: .rounded))
+                        .foregroundColor(DemoTheme.textPrimary)
+
+                    Toggle(
+                        "",
+                        isOn: Binding(
+                            get: { variantToggle.isOn },
+                            set: variantToggle.onChange
+                        )
+                    )
+                    .labelsHidden()
+                    .tint(DemoTheme.accentPrimary)
+                    .disabled(!variantToggle.isEnabled)
+                    .accessibilityLabel(variantToggle.label)
+                    .accessibilityValue(variantToggle.value)
                 }
                 .padding(.vertical, 18)
 
@@ -83,4 +118,12 @@ struct LocalePickerRow {
     let selectedLocale: String
     let locales: [String]
     let onSelect: (String) -> Void
+}
+
+struct VariantToggleRow {
+    let label: String
+    let value: String
+    let isOn: Bool
+    let isEnabled: Bool
+    let onChange: (Bool) -> Void
 }

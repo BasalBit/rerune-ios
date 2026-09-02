@@ -6,6 +6,11 @@ struct WelcomeView: View {
     @State private var refreshPhase: RefreshPhase = .idle
     @State private var lastSyncedText = Self.formattedTimestamp(for: Date())
     @State private var selectedLocaleCode = Self.resolvedLocaleCode()
+    @State private var isVariantSelected = UserDefaults.standard.bool(
+        forKey: "rerune.example.isVariantSelected"
+    )
+    @State private var isChangingVariant = false
+    @State private var variantError: String?
 
     var body: some View {
         NavigationView {
@@ -38,6 +43,16 @@ struct WelcomeView: View {
                                 .frame(maxWidth: .infinity)
                                 .frame(height: heroHeight(for: proxy.size.height))
                                 .clipped()
+                                .overlay(alignment: .topLeading) {
+                                    Text(publishDateText)
+                                        .font(.system(size: 17, weight: .semibold, design: .rounded))
+                                        .foregroundColor(DemoTheme.textPrimary)
+                                        .lineSpacing(3)
+                                        .padding(.horizontal, DemoTheme.horizontalPadding)
+                                        .padding(.top, 20)
+                                        .background(Color.clear)
+                                        .shadow(color: .black.opacity(0.8), radius: 5, x: 0, y: 2)
+                                }
 
                             Spacer(minLength: 0)
 
@@ -51,8 +66,25 @@ struct WelcomeView: View {
                                         selectedLocale: selectedLocaleCode,
                                         locales: availableLocaleCodes,
                                         onSelect: selectLocale
+                                    ),
+                                    variantToggle: VariantToggleRow(
+                                        label: "Variant",
+                                        value: isVariantSelected ? Self.demoVariantSlug : "Main",
+                                        isOn: isVariantSelected,
+                                        isEnabled: !isChangingVariant,
+                                        onChange: setVariantSelected
                                     )
                                 )
+
+                                if isChangingVariant {
+                                    Text("Applying \(isVariantSelected ? Self.demoVariantSlug : "Main")...")
+                                        .font(.system(size: 14, weight: .semibold, design: .rounded))
+                                        .foregroundColor(DemoTheme.accentPrimary)
+                                } else if let variantError {
+                                    Text(variantError)
+                                        .font(.system(size: 14, weight: .semibold, design: .rounded))
+                                        .foregroundColor(.red)
+                                }
 
                                 Text(localized(refreshPhase.localizationKey))
                                     .font(.system(size: 14, weight: .semibold, design: .rounded))
@@ -146,6 +178,10 @@ struct WelcomeView: View {
         NSLocalizedString(key, comment: "")
     }
 
+    private var publishDateText: String {
+        String(format: localized("publish_date"), Self.demoPublishDate)
+    }
+
     private var availableLocaleCodes: [String] {
         Self.availableLocaleCodes(selectedLocale: selectedLocaleCode)
     }
@@ -155,6 +191,39 @@ struct WelcomeView: View {
         selectedLocaleCode = normalizedLocale
         UserDefaults.standard.set(normalizedLocale, forKey: "rerune.example.selectedLocale")
         reRuneSetLocale(normalizedLocale)
+    }
+
+    private func setVariantSelected(_ selected: Bool) {
+        guard !isChangingVariant, selected != isVariantSelected else {
+            return
+        }
+
+        let previousSelection = isVariantSelected
+        isVariantSelected = selected
+        isChangingVariant = true
+        variantError = nil
+
+        Task { @MainActor in
+            do {
+                if selected {
+                    try await reRuneSetVariant(
+                        ReRuneVariant(Self.demoVariantSlug),
+                        persist: true
+                    )
+                } else {
+                    try await reRuneSetVariant(persist: true)
+                }
+                UserDefaults.standard.set(
+                    selected,
+                    forKey: "rerune.example.isVariantSelected"
+                )
+                isChangingVariant = false
+            } catch {
+                isVariantSelected = previousSelection
+                isChangingVariant = false
+                variantError = "Variant change failed: \(error)"
+            }
+        }
     }
 
     private func syncSelectedLocaleCode() {
@@ -214,6 +283,18 @@ struct WelcomeView: View {
             .trimmingCharacters(in: .whitespacesAndNewlines)
             .replacingOccurrences(of: "_", with: "-")
     }
+
+    private static let demoVariantSlug: String = {
+        let configured = Bundle.main.object(
+            forInfoDictionaryKey: "RERUNE_VARIANT_SLUG"
+        ) as? String
+            ?? ProcessInfo.processInfo.environment["RERUNE_VARIANT_SLUG"]
+            ?? "vip"
+        let trimmed = configured.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.isEmpty ? "vip" : trimmed
+    }()
+
+    private static let demoPublishDate = "14.07.2026"
 }
 
 private enum RefreshPhase: Equatable {

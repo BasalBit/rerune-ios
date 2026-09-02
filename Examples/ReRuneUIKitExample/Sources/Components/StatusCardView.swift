@@ -2,16 +2,44 @@ import UIKit
 
 final class StatusCardView: UIView {
     struct Row {
+        enum Accessory {
+            case text
+            case menu(UIMenu)
+            case toggle(
+                isOn: Bool,
+                isEnabled: Bool,
+                onChange: (Bool) -> Void
+            )
+        }
+
         let label: String
         let value: String
-        let menu: UIMenu?
+        let accessory: Accessory
 
         static func text(label: String, value: String) -> Row {
-            Row(label: label, value: value, menu: nil)
+            Row(label: label, value: value, accessory: .text)
         }
 
         static func picker(label: String, value: String, menu: UIMenu) -> Row {
-            Row(label: label, value: value, menu: menu)
+            Row(label: label, value: value, accessory: .menu(menu))
+        }
+
+        static func toggle(
+            label: String,
+            value: String,
+            isOn: Bool,
+            isEnabled: Bool,
+            onChange: @escaping (Bool) -> Void
+        ) -> Row {
+            Row(
+                label: label,
+                value: value,
+                accessory: .toggle(
+                    isOn: isOn,
+                    isEnabled: isEnabled,
+                    onChange: onChange
+                )
+            )
         }
     }
 
@@ -86,7 +114,20 @@ final class StatusCardView: UIView {
         )
         labelView.text = row.label
 
-        let valueView = row.menu.map { makePickerButton(title: row.value, menu: $0) } ?? makeValueLabel(text: row.value)
+        let valueView: UIView
+        switch row.accessory {
+        case .text:
+            valueView = makeValueLabel(text: row.value)
+        case let .menu(menu):
+            valueView = makePickerButton(title: row.value, menu: menu)
+        case let .toggle(isOn, isEnabled, onChange):
+            valueView = makeToggleAccessory(
+                value: row.value,
+                isOn: isOn,
+                isEnabled: isEnabled,
+                onChange: onChange
+            )
+        }
 
         let stack = UIStackView(arrangedSubviews: [labelView, UIView(), valueView])
         stack.translatesAutoresizingMaskIntoConstraints = false
@@ -132,5 +173,37 @@ final class StatusCardView: UIView {
         button.titleLabel?.font = DemoTheme.roundedFont(size: 15, weight: .semibold)
 
         return button
+    }
+
+    private func makeToggleAccessory(
+        value: String,
+        isOn: Bool,
+        isEnabled: Bool,
+        onChange: @escaping (Bool) -> Void
+    ) -> UIView {
+        let valueView = makeValueLabel(text: value)
+        let toggle = UISwitch()
+        toggle.translatesAutoresizingMaskIntoConstraints = false
+        toggle.isOn = isOn
+        toggle.isEnabled = isEnabled
+        toggle.onTintColor = DemoTheme.accentPrimary
+        toggle.accessibilityLabel = "Variant"
+        toggle.accessibilityValue = value
+        toggle.addAction(
+            UIAction { action in
+                guard let sender = action.sender as? UISwitch else {
+                    return
+                }
+                onChange(sender.isOn)
+            },
+            for: .valueChanged
+        )
+
+        let stack = UIStackView(arrangedSubviews: [valueView, toggle])
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.axis = .horizontal
+        stack.alignment = .center
+        stack.spacing = 12
+        return stack
     }
 }

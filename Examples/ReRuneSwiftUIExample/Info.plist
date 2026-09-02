@@ -22,6 +22,8 @@
     <true/>
     <key>RERUNE_OTA_PUBLISH_ID</key>
     <string>$(RERUNE_OTA_PUBLISH_ID)</string>
+	<key>RERUNE_VARIANT_SLUG</key>
+	<string>$(RERUNE_VARIANT_SLUG)</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIUserInterfaceStyle</key>

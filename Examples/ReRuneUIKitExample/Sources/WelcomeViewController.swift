@@ -56,8 +56,18 @@ final class WelcomeViewController: UIViewController, ReRuneTextRefreshable {
         lines: 0
     )
     private let heroImageView = UIImageView(image: UIImage(named: "writer_orb"))
+    private let publishDateLabel = UILabel.demoLabel(
+        font: DemoTheme.roundedFont(size: 17, weight: .semibold),
+        color: DemoTheme.textPrimary,
+        lines: 0
+    )
     private let statusCardView = StatusCardView()
     private let refreshStateLabel = UILabel.demoLabel(
+        font: DemoTheme.roundedFont(size: 14, weight: .semibold),
+        color: DemoTheme.textSecondary,
+        lines: 0
+    )
+    private let variantStateLabel = UILabel.demoLabel(
         font: DemoTheme.roundedFont(size: 14, weight: .semibold),
         color: DemoTheme.textSecondary,
         lines: 0
@@ -68,6 +78,11 @@ final class WelcomeViewController: UIViewController, ReRuneTextRefreshable {
     private var heroHeightConstraint: NSLayoutConstraint?
     private var refreshPhase: RefreshPhase = .idle
     private var lastSyncedText = WelcomeViewController.formattedTimestamp(for: Date())
+    private var isVariantSelected = UserDefaults.standard.bool(
+        forKey: "rerune.example.isVariantSelected"
+    )
+    private var isChangingVariant = false
+    private var variantError: String?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -93,11 +108,36 @@ final class WelcomeViewController: UIViewController, ReRuneTextRefreshable {
         badgeView.update(title: localized("welcome_badge"))
         titleLabel.text = localized("welcome_title")
         subtitleLabel.text = localized("welcome_subtitle")
+        publishDateLabel.text = String(
+            format: localized("publish_date"),
+            Self.demoPublishDate
+        )
         let localeCode = resolvedLocaleCode()
         statusCardView.update(rows: [
             .picker(label: localized("welcome_locale_label"), value: localeCode, menu: localeMenu(selectedLocale: localeCode)),
+            .toggle(
+                label: "Variant",
+                value: isVariantSelected ? Self.demoVariantSlug : "Main",
+                isOn: isVariantSelected,
+                isEnabled: !isChangingVariant,
+                onChange: { [weak self] selected in
+                    self?.setVariantSelected(selected)
+                }
+            ),
             .text(label: localized("welcome_last_synced_label"), value: lastSyncedText),
         ])
+        if isChangingVariant {
+            variantStateLabel.text = "Applying \(isVariantSelected ? Self.demoVariantSlug : "Main")..."
+            variantStateLabel.textColor = DemoTheme.accentPrimary
+            variantStateLabel.isHidden = false
+        } else if let variantError {
+            variantStateLabel.text = variantError
+            variantStateLabel.textColor = .systemRed
+            variantStateLabel.isHidden = false
+        } else {
+            variantStateLabel.text = nil
+            variantStateLabel.isHidden = true
+        }
         refreshStateLabel.text = localized(refreshPhase.localizationKey)
         refreshStateLabel.textColor = refreshPhase.tint
         openStoryButton.setTitle(localized("welcome_open_story_cta"), for: .normal)
@@ -173,11 +213,18 @@ final class WelcomeViewController: UIViewController, ReRuneTextRefreshable {
         heroImageView.clipsToBounds = true
         heroHeightConstraint = heroImageView.heightAnchor.constraint(equalToConstant: 320)
         heroHeightConstraint?.isActive = true
+        publishDateLabel.backgroundColor = .clear
+        publishDateLabel.layer.shadowColor = UIColor.black.cgColor
+        publishDateLabel.layer.shadowOpacity = 0.8
+        publishDateLabel.layer.shadowRadius = 5
+        publishDateLabel.layer.shadowOffset = CGSize(width: 0, height: 2)
+        heroImageView.addSubview(publishDateLabel)
 
         footerStack.axis = .vertical
         footerStack.spacing = 14
         footerStack.translatesAutoresizingMaskIntoConstraints = false
         footerStack.addArrangedSubview(statusCardView)
+        footerStack.addArrangedSubview(variantStateLabel)
         footerStack.addArrangedSubview(refreshStateLabel)
 
         [topSpacer, bottomSpacer].forEach {
@@ -197,6 +244,7 @@ final class WelcomeViewController: UIViewController, ReRuneTextRefreshable {
         titleLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         subtitleLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         refreshStateLabel.setContentCompressionResistancePriority(.required, for: .vertical)
+        variantStateLabel.setContentCompressionResistancePriority(.required, for: .vertical)
 
         refreshControl.addTarget(self, action: #selector(pullToRefresh), for: .valueChanged)
         openStoryButton.addTarget(self, action: #selector(openStory), for: .touchUpInside)
@@ -218,6 +266,10 @@ final class WelcomeViewController: UIViewController, ReRuneTextRefreshable {
             contentStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: DemoTheme.horizontalPadding),
             contentStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -DemoTheme.horizontalPadding),
             contentStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -28),
+
+            publishDateLabel.topAnchor.constraint(equalTo: heroImageView.topAnchor, constant: 20),
+            publishDateLabel.leadingAnchor.constraint(equalTo: heroImageView.leadingAnchor, constant: DemoTheme.horizontalPadding),
+            publishDateLabel.trailingAnchor.constraint(equalTo: heroImageView.trailingAnchor, constant: -DemoTheme.horizontalPadding),
         ])
     }
 
@@ -253,6 +305,45 @@ final class WelcomeViewController: UIViewController, ReRuneTextRefreshable {
     private func selectLocale(_ locale: String) {
         UserDefaults.standard.set(locale, forKey: "rerune.example.selectedLocale")
         reRuneSetLocale(locale)
+    }
+
+    private func setVariantSelected(_ selected: Bool) {
+        guard !isChangingVariant, selected != isVariantSelected else {
+            return
+        }
+
+        let previousSelection = isVariantSelected
+        isVariantSelected = selected
+        isChangingVariant = true
+        variantError = nil
+        rebindStrings()
+
+        Task { @MainActor [weak self] in
+            guard let self else {
+                return
+            }
+
+            do {
+                if selected {
+                    try await reRuneSetVariant(
+                        ReRuneVariant(Self.demoVariantSlug),
+                        persist: true
+                    )
+                } else {
+                    try await reRuneSetVariant(persist: true)
+                }
+                UserDefaults.standard.set(
+                    selected,
+                    forKey: "rerune.example.isVariantSelected"
+                )
+                isChangingVariant = false
+            } catch {
+                isVariantSelected = previousSelection
+                isChangingVariant = false
+                variantError = "Variant change failed: \(error)"
+            }
+            rebindStrings()
+        }
     }
 
     private func resolvedLocaleCode() -> String {
@@ -308,4 +399,16 @@ final class WelcomeViewController: UIViewController, ReRuneTextRefreshable {
             .trimmingCharacters(in: .whitespacesAndNewlines)
             .replacingOccurrences(of: "_", with: "-")
     }
+
+    private static let demoVariantSlug: String = {
+        let configured = Bundle.main.object(
+            forInfoDictionaryKey: "RERUNE_VARIANT_SLUG"
+        ) as? String
+            ?? ProcessInfo.processInfo.environment["RERUNE_VARIANT_SLUG"]
+            ?? "vip"
+        let trimmed = configured.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.isEmpty ? "vip" : trimmed
+    }()
+
+    private static let demoPublishDate = "14.07.2026"
 }

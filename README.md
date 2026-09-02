@@ -172,6 +172,56 @@ ForEach(reRuneAvailableLocaleDetails, id: \.identifier) { locale in
 After a dashboard-only locale is successfully applied, both lists can include
 it even when it was not compiled into the app bundle.
 
+## Translation variants
+
+Use [Translation Variants](https://rerune.io/translation-variants) when the same
+product action needs different wording for a customer, white-label brand, plan,
+role, region, experiment, or partner. The app keeps one translation key. Main
+holds the shared content, and each named Variant overrides only the keys and
+languages that differ.
+
+Variants solve an audience problem. Use locales for language differences and
+plural forms for quantity-dependent grammar. A Variant can contain plain or
+supported plural content, and a missing Variant value falls back to Main for
+the same key and language.
+
+Each project Variant has a stable runtime value. Select one during setup when
+the audience is already known:
+
+```swift
+reRuneSetup(
+    otaPublishId: "replace-with-ota-publish-id",
+    variant: ReRuneVariant("customer_acme")
+)
+```
+
+Or select it after login, once the app knows the customer, brand, plan, or role:
+
+```swift
+try await reRuneSetVariant(ReRuneVariant("customer_acme"))
+```
+
+The setter changes subsequent native Foundation lookups before it returns and
+emits through `reRuneRevisionPublisher`. Pass `persist: true` to restore the
+selection during later `reRuneSetup(...)` calls:
+
+```swift
+try await reRuneSetVariant(
+    ReRuneVariant("customer_acme"),
+    persist: true
+)
+
+try await reRuneResetVariant() // Select and store Main.
+```
+
+Without persistence, `.main` or a named Variant applies only to the current
+runtime. A stored selection takes precedence over a later setup argument. The
+SDK does not fetch the project Variant catalog, so the application selects the
+published runtime value using context it already owns.
+
+Dashboard publishing includes Main and its alternatives for SDK delivery.
+Platform imports and exports currently contain Main translations only.
+
 ## Plural strings
 
 Dashboard plural updates use the same native lookup and formatting calls as bundled `.stringsdict` plurals:
@@ -182,8 +232,13 @@ let text = String.localizedStringWithFormat(format, count)
 ```
 
 ReRune derives native cardinal plurals from the backend's generic structured
-message records. The plural-control value remains the first native formatting
-argument; displayed placeholders follow it as independent arguments.
+message records. Current payloads use the key's placeholder catalog for both the
+plural control and displayed arguments. Legacy payloads without a declared
+control placeholder retain their first implicit control argument.
+
+A declared control such as `count` selects the plural category. The declaration
+does not add visible text by itself. It appears in the result only when a form
+also references `{{count}}` or contains an argument part named `count`.
 
 For example, a message controlled by `count` that displays `firstName` and
 `itemCount` keeps the normal Foundation call:
@@ -215,11 +270,16 @@ Foundation chooses the plural category using the device's current formatting loc
 - ETag revalidation applies only to the manifest. Locale requests never send `If-None-Match`, and a locale `304` is treated as an unsupported per-locale failure that preserves cached state.
 - `main_language` must normalize to a locale declared in the same manifest. Manifests without it are rejected; an invalid cached manifest and its locale bundles are purged during setup.
 - Each locale URL returns a top-level array of locale-scoped generic translation
-  records. Every record has a `values` array containing zero or one entry.
+  records. Object and array nodes can contain children under `translationKeys`.
+  Every node has a `values` array containing zero or one entry, and only
+  `type: "key"` nodes contribute runtime translations.
   `values: []` is preserved in cache but supplies no runtime override, so lookup
   continues through the main-language and bundled fallback chain. Plain
-  `value` messages and structured cardinal plurals are supported when one entry
-  is present.
+  `value` messages and structured messages are supported when one entry is
+  present.
+- A localized value can contain an optional `variations` array sorted by exact
+  lowercase slug. ReRune selects at most one matching item. A missing list or
+  match uses the localized value's Main `value` or `message`.
 - A delta record with `values: []` replaces the cached record and removes any
   previous runtime override for that key. Records omitted from a delta retain
   their cached state. A one-entry record with `value: ""` remains an intentional
@@ -243,6 +303,8 @@ Foundation chooses the plural category using the device's current formatting loc
 - Runtime lookup uses the selected ReRune locale when set, otherwise the platform preferred language. Missing OTA keys then use the manifest `main_language` OTA chain before bundled strings.
 - `reRuneSetup(...)` restores and parses the local cache synchronously so cached strings are immediately available. Its startup network check runs in a detached Swift-concurrency task and does not delay setup completion.
 - `reRuneRevisionPublisher` is the change notification stream for visible UI refreshes; the emitted value is the latest applied manifest revision and may repeat when OTA payloads change under the same manifest revision.
+- Persisted Variant selections are scoped by a digest of `otaPublishId` and
+  stored separately from manifest and locale cache cleanup.
 - Native OTA override support in phase 1 is limited to `Bundle.main` and the default `Localizable` table.
 - SwiftUI `Text("key")`, `LocalizedStringKey`, and `LocalizedStringResource` are not supported for OTA interception in phase 1; use `NSLocalizedString(...)` inside SwiftUI views instead.
 - Periodic refresh policy uses split fields: `periodicIntervalInHours` + `periodicIntervalInDays`.

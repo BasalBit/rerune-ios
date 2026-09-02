@@ -2,6 +2,28 @@
 
 ## Unreleased
 
+## 1.1.0 (2026-09-02)
+
+- Added the root MIT `LICENSE` to future XCFramework ZIPs and release checks
+  that reject a missing or altered license notice.
+- Added SDK-side translation variant selection with a type-safe `.main`
+  sentinel, setup configuration, asynchronous runtime changes, persisted
+  project-scoped selection, and `reRuneResetVariant()`.
+- Named the consumer-facing concept Variant through `ReRuneVariant`, the
+  `variant:` setup argument, `reRuneSetVariant`, and `reRuneResetVariant` while
+  preserving the server's Variation wire-field names.
+- Preserved the original `reRuneSetup` overload for compiled consumers while
+  adding a variant-aware overload whose selection defaults to `.main`.
+- Added exact-slug main fallback across hierarchical locale payloads. Selected
+  plain and structured variant content continues through the existing
+  placeholder and native plural pipeline, including nested message parts.
+- Fixed text-only structured messages so literal percent signs remain unchanged.
+  Structured messages that require Foundation formatting still escape them.
+- Added a configurable Main or Variant toggle to both example welcome screens
+  for manual selection testing. Main and Variant selections persist across app
+  relaunches. Both welcome hero images also show the `publish_date` placeholder
+  with a fixed date on a transparent overlay.
+
 ## 1.0.0 (2026-08-05)
 
 - Refreshed the public Swift package landing page with an outcome-oriented
