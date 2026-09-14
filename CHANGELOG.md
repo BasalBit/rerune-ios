@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- Made both example projects resolve published SDK 1.1.1 through Swift Package
+  Manager with checked-in lockfiles. The entire `Examples/` folder can be copied
+  and built independently, without an SDK source checkout or root manifest.
+- Consolidated example code, fonts, and translations under `Examples/Shared`.
+  Removed the obsolete `Chapter` directory and test-only SDK/runtime adapter.
+- Documented standalone setup, OTA configuration, and native translation editing.
+
 ## 1.1.1 (2026-09-14)
 
 - Moved SDK testing, example builds, packaging, public repository synchronization,

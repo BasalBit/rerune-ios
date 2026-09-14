@@ -5,9 +5,9 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleIdentifier</key>
-	<string>io.rerune.examples.chapter.resources</string>
+	<string>io.rerune.examples.resources</string>
 	<key>CFBundleName</key>
-	<string>Chapter</string>
+	<string>ReRuneResources</string>
 	<key>CFBundlePackageType</key>
 	<string>BNDL</string>
 </dict>

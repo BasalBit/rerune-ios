@@ -316,9 +316,16 @@ Open `Examples/ReRuneExamples.xcworkspace` to try both demo apps:
 - `ReRuneUIKitExample`
 - `ReRuneSwiftUIExample`
 
-Both examples use the same demo OTA publish id.
+Both apps display ReRune and retain the ReRune icon. Their native reading
+screens include Library, Discover, Saved, three two-chapter stories, language
+selection, reading settings, and Main/VIP editions. They share seven bundled
+localizations and reference published SDK 1.1.1 directly through the remote
+Swift Package Manager dependency. The entire `Examples/` folder can be copied
+out and built independently; no local SDK checkout or root manifest is needed.
 
-They mirror the welcome/story demo flows kept in the source repo examples while consuming the published package instead of the local workspace package.
+SDK 1.1.1 includes edition selection and supports the service's zero-based
+placeholder orders. See the [example guide](Examples/README.md) for
+configuration, bundled translations, and testing OTA updates.
 
 ## License
 
