@@ -1,33 +1,11 @@
-# ReRune SwiftUI Example
+# ReRune SwiftUI example
 
-This sample demonstrates the local `ReRune` package from this repository using a themed SwiftUI welcome/story flow.
+The ReRune reading example implemented in SwiftUI. Select `ReRuneSwiftUIExample` in `../ReRuneExamples.xcworkspace` to run it with Xcode on iOS 15 or later.
 
-## Configure
+SwiftUI owns the library pages, reader, controls, and settings sheet. An observed shared store subscribes to SDK revisions and locale metadata. The three tab scroll views stay mounted to retain independent scroll positions.
 
-1. `Config/Example.xcconfig` is already preconfigured with the shared demo `RERUNE_OTA_PUBLISH_ID`.
-2. Set `RERUNE_VARIANT_SLUG` in that file to the published Variant you want
-   to test. The example default is `vip`.
-3. If you need to override either value locally, copy `Config/Example.xcconfig` to `Config/Local.xcconfig`.
-4. In Xcode, assign `Local.xcconfig` to the app target build configuration.
-5. The Xcode project already points to the local package path `../..`, so no SPM URL setup is required in this repo.
+Configure your OTA publish ID and variant slug in `Config/Example.xcconfig`. The SDK package dependency, bundle identifier, and signing settings are preserved. The app registers shared resources from `../Chapter/`, displays the name ReRune, and keeps the existing ReRune app icon.
 
-## Run
+Library, Discover, and Saved lead to three stories with two chapters each. Settings includes Main and the configured edition, native date and plural examples, refresh results, and the session storage explanation. Refresh distinguishes updated, unchanged, and failed outcomes and blocks repeated requests while busy.
 
-- Open `../ReRuneExamples.xcworkspace`.
-- Select scheme `ReRuneSwiftUIExample`.
-- Run on an iOS 15+ simulator or device.
-
-## Behavior
-
-- App initializes the SDK in `App.init` with the shared demo publish id.
-- App restores the previously selected demo language from `UserDefaults` and applies it with `reRuneSetLocale(_:)`.
-- SwiftUI screens use `NSLocalizedString(...)` for OTA-managed strings and attach `.reRuneObserveRevision()` at the screen level so refresh only redraws visible content.
-- The welcome screen includes pull-to-refresh, status card state, a picker backed by `reRuneAvailableLocales`, a Main or Variant toggle, and navigation into the story screen.
-- The top of the hero image overlays the formatted `publish_date` value with
-  the fixed date `14.07.2026`. The text has no opaque background.
-- The Variant toggle calls `reRuneSetVariant` with persistence. Successful
-  changes redraw visible native lookups immediately and survive app relaunches.
-  A failed change restores the previous toggle position and displays the error.
-- Selecting a locale updates SwiftUI local state immediately, persists the locale, and calls `reRuneSetLocale(_:)` so dashboard-only languages can render without opening iOS Settings.
-- The story screen shows the formatted publish date, count-1/count-2 `ammount_of_keys` plural results, and a manual refresh button.
-- The plural example uses `String.localizedStringWithFormat(NSLocalizedString(...), count)` and falls back to bundled `Localizable.stringsdict` content when OTA has no valid plural.
+See the [shared example guide](../README.md) for localization ownership, build commands, persisted preferences, and verification limits.

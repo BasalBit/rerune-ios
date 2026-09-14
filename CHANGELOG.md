@@ -2,6 +2,32 @@
 
 ## Unreleased
 
+## 1.1.1 (2026-09-14)
+
+- Moved SDK testing, example builds, packaging, public repository synchronization,
+  and publication into the local release command. Removed the GitHub Actions
+  workflows; debug symbols are retained in a private local release archive.
+
+- Added compatibility with zero-based placeholder orders delivered by the
+  service. Existing positive Foundation positions retain their meaning.
+- Replaced both example interfaces with the reading library, discovery, saved
+  stories, reading settings, and two-chapter reader. Both native apps share
+  artwork, fonts, native localizations, and session reading state.
+- Preserved ReRune as both example apps' display name and header wordmark,
+  with the existing ReRune app icons.
+- Corrected UIKit example width constraints to keep scroll content within
+  safe-area gutters and prevent intrinsic text sizes from shrinking pages
+  or pushing them beyond the viewport.
+- Removed unused example cover PNGs and the retired plural alias, restored
+  the existing app icon catalogs, and removed the migration-only SDK copying,
+  app assembly, image export, and publication capture tools.
+- Removed the remaining example Python scripts, standalone test harness,
+  and duplicate ARB catalogs after manual review. Native localization files
+  and Swift accessors are maintained directly; app builds use the Xcode schemes.
+- Updated manual test fixtures for the rewritten apps.
+- Set example Debug builds to DWARF and Release builds to DWARF with dSYM,
+  avoiding unnecessary dSYM generation for the Debug launcher executable.
+
 ## 1.1.0 (2026-09-02)
 
 - Added the root MIT `LICENSE` to future XCFramework ZIPs and release checks
