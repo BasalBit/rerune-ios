@@ -316,9 +316,11 @@ Open `Examples/ReRuneExamples.xcworkspace` to try both demo apps:
 - `ReRuneUIKitExample`
 - `ReRuneSwiftUIExample`
 
-Both examples use the same demo OTA publish id.
-
-They mirror the welcome/story demo flows kept in the source repo examples while consuming the published package instead of the local workspace package.
+Both apps use the same demo OTA publish ID and resolve published SDK 1.2.0
+directly through Swift Package Manager. Their native reading screens include
+language and edition selection, plus a session-scoped Staging mode toggle that
+resynchronizes through `reRuneSetStagingMode(_:)`. See the
+[example guide](Examples/README.md) for launch configuration and testing.
 
 ## License
 

@@ -1,10 +1,30 @@
-# ReRune examples
+# ReRune example apps
 
-Both example apps present the reviewed reading experience with native screens. Their display name and header wordmark are ReRune, and they use the existing ReRune app icons. Open `ReRuneExamples.xcworkspace` and choose `ReRuneSwiftUIExample` or `ReRuneUIKitExample`. The projects reference the local `ReRune` package and retain iOS 15 as their minimum. Chapter remains the internal name for the shared implementation and design reference.
+These standalone SwiftUI and UIKit apps consume published ReRune iOS SDK
+1.2.0 from `https://github.com/BasalBit/rerune-ios.git`. Open
+`ReRuneExamples.xcworkspace` and choose either app. Xcode downloads the released
+XCFramework through Swift Package Manager; no SDK source checkout or local
+package override is required. Both apps support iOS 15 or later.
 
 ## Content and configuration
 
-Set `RERUNE_OTA_PUBLISH_ID` in each app's `Config/Example.xcconfig` to your OTA publish ID. Set `RERUNE_VARIANT_SLUG` to a published variant slug such as `vip`. `ChapterSDK.configure()` passes a Boolean directly to `reRuneSetup`; change that Boolean to choose the launch mode. Both settings screens include a Draft preview toggle that passes its Boolean directly to `reRuneSetStagingMode`, reads the active value from `reRuneIsStagingModeEnabled`, immediately resynchronizes, and shows the refresh outcome. The runtime selection is not persisted, so the setup Boolean applies again on the next launch. These local configuration files are preserved during SDK publication. Both apps use the package at the repository root: SDK source in the development repository and the published binary in the public repository.
+Both `Config/Example.xcconfig` files contain the demo configuration:
+
+```xcconfig
+RERUNE_OTA_PUBLISH_ID = 03141fc5dde6e5a1f9debf99ee68bbb125dc830412fdfb85af4834d3de341b3b
+RERUNE_VARIANT_SLUG = vip
+```
+
+Replace the publish ID and variant slug for your project. Setup starts in
+production mode by passing `staging: false` to `reRuneSetup(...)`.
+
+Both settings screens include a Staging mode toggle. It calls
+`reRuneSetStagingMode(_:)`, rebuilds the selected mode's cached state, and
+resynchronizes before completing. Its result appears in the existing refresh
+panel, and `reRuneIsStagingModeEnabled` supplies the current runtime state. The
+toggle is session-scoped and is not persisted, so setup starts in production
+mode again after relaunching the app. Staging switches, variant changes, and
+manual refreshes block one another while running.
 
 Shared code and resources live under `Chapter/`. Each app owns a separate observable reading store. Opening a story does not advance it. Finishing its two chapters produces 0, 50, and 100 percent; Read again resets only that story. Bookmarks, the active tab, genre filter, and reading progress last for the app session. Locale and edition selections retain the existing persisted preferences.
 
@@ -15,16 +35,22 @@ The `Chapter.bundle` fallback contains English, German, Spanish, French, Italian
 Both UIs draw story covers through the shared Core Graphics implementation. Bundled resources contain native localizations, Instrument Sans and Lora fonts, and their licenses. Font registration uses `UIAppFonts`; startup checks fail explicitly if a font is missing. Each target compiles its existing app icon catalog.
 
 The reviewed running examples and their current source are the visual reference.
-Keep only runtime assets: app icons, fonts/licenses, and localization resources.
-Design reference images, golden screenshots, image-export tests, publication
-captures, and manually copied SDKs do not belong in the examples. Resolve ReRune
-through the existing package dependency.
+Keep only runtime assets: app icons, fonts and licenses, and localization
+resources. Resolve ReRune through the existing published package dependency.
 
 ## Build and review
 
-Build and run both apps through the existing Xcode workspace and schemes.
-Verify visual changes in the running apps, and test live OTA behavior against
-the configured service. SDK regression tests remain in the root package targets.
+Build and run both apps through the existing Xcode workspace and schemes. You
+can also build either scheme from this directory:
+
+```sh
+xcodebuild -workspace ReRuneExamples.xcworkspace \
+  -scheme ReRuneSwiftUIExample -configuration Debug \
+  -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
+```
+
+Replace the scheme with `ReRuneUIKitExample` for UIKit. Verify live OTA and
+staging behavior against the configured service.
 
 Manual review of the reading experience does not establish an exhaustive device
 or accessibility matrix. Check the running apps on the device sizes, locales,

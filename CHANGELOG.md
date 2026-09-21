@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Updated both standalone example projects to resolve published SDK 1.2.0
+  directly through Swift Package Manager.
+- Completed the example Staging mode controls, including mutual exclusion with
+  edition changes and manual refreshes. Setup starts in production mode, and
+  runtime staging selections remain session-scoped.
+
 ## 1.2.0 (2026-09-21)
 
 - Reworked staging-mode persistence around lazily derived, isolated namespaces.
@@ -33,7 +39,7 @@
 - Added the synchronous `reRuneIsStagingModeEnabled` value so integrations can
   inspect the current setup session's active mode. It reflects the setup
   argument and updates before a runtime switch begins synchronization.
-- Added a Draft preview toggle to both example settings screens. The toggle
+- Added a Staging mode toggle to both example settings screens. The toggle
   switches the SDK's staging mode at runtime through `reRuneSetStagingMode`,
   immediately resynchronizes, surfaces the refresh outcome in the existing
   refresh panel, blocks overlapping variant and refresh operations, and is
