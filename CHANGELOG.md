@@ -2,92 +2,31 @@
 
 ## Unreleased
 
-- Updated both standalone example projects to resolve published SDK 1.2.0
-  directly through Swift Package Manager.
-- Completed the example Staging mode controls, including mutual exclusion with
-  edition changes and manual refreshes. Setup starts in production mode, and
-  runtime staging selections remain session-scoped.
-
 ## 1.2.0 (2026-09-21)
 
-- Reworked staging-mode persistence around lazily derived, isolated namespaces.
-  The staging namespace is derived idempotently from the setup store on first
-  staging-mode use and never exists for integrators that stay in production
-  mode. Reads create no storage, so a mode that never writes leaves no trace.
-  Disk stores derive a sibling `ReRuneGenericV1_staging` directory with
-  identical file shapes; stores without namespace support degrade staging mode
-  to memory-only persistence. Persisted values carry a staging marker that
-  reads filter, so shared physical storage cannot leak snapshots between
-  modes.
-- Aligned the synchronization core with a memory-first session model: a
-  namespace is read into memory once per mode activation, unchanged
-  synchronizations perform zero store operations, writes commit to the
-  namespace before memory, and locale ETags are only revalidated against the
-  endpoint URL they were issued for.
-- Update checks now capture their mode and activation epoch once per check and
-  coalesce overlapping checks for the same activation into one operation. A
-  check superseded by a mode switch aborts at its next staleness guard and
-  commits nothing, even when later switches return to the original Boolean
-  mode.
-- Added `reRuneSetStagingMode(_:)` for switching between production and
-  staging mode after setup. The call rebuilds cached runtime state from the
-  selected mode's cache namespace, immediately performs an update check in
-  that mode, and returns its `ReRuneUpdateResult`. An update check superseded
-  by the switch discards its remaining results instead of applying them across
-  modes, and calling the function before setup throws
+### SDK consumer changes
+
+- Added opt-in staging preview through the `staging:` argument on
+  `reRuneSetup(...)`. It defaults to `false` and applies only to the current
+  setup session.
+- Added `reRuneSetStagingMode(_:)` for switching modes and synchronizing
+  immediately after setup. Added `reRuneIsStagingModeEnabled` for reading the
+  active mode. Calling the setter before setup throws
   `ReRuneStagingModeError.setupRequired`.
-- Added the synchronous `reRuneIsStagingModeEnabled` value so integrations can
-  inspect the current setup session's active mode. It reflects the setup
-  argument and updates before a runtime switch begins synchronization.
-- Added a Staging mode toggle to both example settings screens. The toggle
-  switches the SDK's staging mode at runtime through `reRuneSetStagingMode`,
-  immediately resynchronizes, surfaces the refresh outcome in the existing
-  refresh panel, blocks overlapping variant and refresh operations, and is
-  never persisted, so the setup-applied mode returns on the next launch.
-- Added opt-in SDK staging mode through the `staging:` setup argument, default
-  `false`. With `staging: true`, both the manifest and every locale request
-  carry exactly one `staging=true` parameter, locale requests omit the
-  production `version` and `target_version` cursors, and every locale request
-  runs on every sync because published versions do not track draft edits.
-- In staging mode, locale 200 responses replace the cached and in-memory locale
-  document with the delivered full snapshot, so edited, deleted, disabled, and
-  never-published draft keys appear or disappear on the next sync. The empty
-  snapshot clears the locale. A 304 retains the exact snapshot behind the
-  persisted locale ETag, and a 304 without a usable cached snapshot retries
-  unconditionally.
-- Staging-mode persistence is fully separated from production: the staging
-  namespace stores the staging manifest, staging locale snapshots, and their
-  ETags, while production state and the persisted variation preference stay in
-  the production namespace. Switching the setup flag or the runtime toggle
-  never applies draft content or draft validators to production requests.
-- Locale cache records can now persist an optional locale ETag alongside the
-  snapshot. Records written by the previous ETag-free format remain readable.
+- Staging synchronization now applies complete locale snapshots, so draft
+  additions, edits, deletions, disabled values, and never-published keys are
+  reflected on the next successful sync.
+- Staging and production state are isolated. A mode change restores the
+  selected mode's cached content, and results from superseded update checks are
+  discarded instead of crossing between modes.
 
 ## 1.1.1 (2026-09-14)
 
-- Moved SDK testing, example builds, packaging, public repository synchronization,
-  and publication into the local release command. Removed the GitHub Actions
-  workflows; debug symbols are retained in a private local release archive.
+### SDK consumer changes
 
-- Added compatibility with zero-based placeholder orders delivered by the
-  service. Existing positive Foundation positions retain their meaning.
-- Replaced both example interfaces with the reading library, discovery, saved
-  stories, reading settings, and two-chapter reader. Both native apps share
-  artwork, fonts, native localizations, and session reading state.
-- Preserved ReRune as both example apps' display name and header wordmark,
-  with the existing ReRune app icons.
-- Corrected UIKit example width constraints to keep scroll content within
-  safe-area gutters and prevent intrinsic text sizes from shrinking pages
-  or pushing them beyond the viewport.
-- Removed unused example cover PNGs and the retired plural alias, restored
-  the existing app icon catalogs, and removed the migration-only SDK copying,
-  app assembly, image export, and publication capture tools.
-- Removed the remaining example Python scripts, standalone test harness,
-  and duplicate ARB catalogs after manual review. Native localization files
-  and Swift accessors are maintained directly; app builds use the Xcode schemes.
-- Updated manual test fixtures for the rewritten apps.
-- Set example Debug builds to DWARF and Release builds to DWARF with dSYM,
-  avoiding unnecessary dSYM generation for the Debug launcher executable.
+- Fixed locale payloads that use zero-based placeholder positions. These
+  payloads previously caused the affected locale to be rejected. Existing
+  positive Foundation positions retain their meaning.
 
 ## 1.1.0 (2026-09-02)
 
