@@ -56,6 +56,9 @@
 "see_all" = "Vedi tutto";
 "session_note" = "Segnalibri e progressi restano disponibili durante questa sessione.";
 "settings_description" = "Prova un'altra edizione e aggiorna i testi delle tue storie.";
+"staging_mode" = "Modalità di staging";
+"staging_mode_description" = "Anteprima delle traduzioni in bozza prima della pubblicazione.";
+"staging_mode_error" = "Impossibile cambiare la modalità di staging.";
 "story_body_primary" = "La mattina in cui il fiume scomparve dalle mappe, Ada mise in borsa una matita, una pera e la bussola del nonno. Fuori, l'acqua scorreva ancora. La sentiva dalla cucina.";
 "story_body_secondary" = "Camminò finché il sentiero divenne una traccia nell'erba. Alla curva aspettava un traghettatore con un quaderno vuoto. Cercava qualcuno che sapesse ascoltare.";
 "story_by" = "Una storia di %1$@";

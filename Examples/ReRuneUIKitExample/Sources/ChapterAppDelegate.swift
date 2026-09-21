@@ -7,8 +7,9 @@ final class ChapterAppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
+        ChapterSDK.configure()
         ChapterStyle.verifyFonts()
-        let store = ChapterStore()
+        let store = ChapterStore(runtime: ChapterSDK.runtime())
         self.store = store
         let navigation = UINavigationController(rootViewController: ChapterLibraryController(store: store))
         navigation.setNavigationBarHidden(true, animated: false)

@@ -56,6 +56,9 @@
 "see_all" = "Ver tudo";
 "session_note" = "Os marcadores e o progresso ficam disponíveis durante esta sessão.";
 "settings_description" = "Experimente outra edição e atualize os textos das suas histórias.";
+"staging_mode" = "Modo de staging";
+"staging_mode_description" = "Pré-visualize traduções em rascunho antes de serem publicadas.";
+"staging_mode_error" = "Não foi possível mudar o modo de staging.";
 "story_body_primary" = "Na manhã em que o rio desapareceu dos mapas, Ada levou um lápis, uma pera e a bússola do avô. Lá fora, a água continuava a correr. Ouvia-a da cozinha.";
 "story_body_secondary" = "Caminhou até o caminho ser apenas um vestígio na erva. Na curva esperava um barqueiro com um caderno vazio. Esperava alguém que soubesse ouvir.";
 "story_by" = "Uma história de %1$@";

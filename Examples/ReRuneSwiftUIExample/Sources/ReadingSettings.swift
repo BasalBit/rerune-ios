@@ -25,6 +25,18 @@ struct ReadingSettings: View {
                     Text(store.text(.edition_change_error)).foregroundColor(.red).font(ReadingFont.sans(13))
                 }
                 Divider().background(Color(ChapterStyle.border))
+                Toggle(isOn: Binding(get: { store.stagingModeActive }, set: { enabled in Task { await store.setStagingMode(enabled) } })) {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(store.text(.staging_mode)).font(ReadingFont.sans(17))
+                        Text(store.text(.staging_mode_description)).font(ReadingFont.sans(13)).foregroundColor(Color(ChapterStyle.secondary))
+                    }
+                }.disabled(store.changingStagingMode || store.refreshState == .busy || store.changingVariant).tint(Color(ChapterStyle.accent))
+                    .accessibilityIdentifier("staging-mode")
+                if store.changingStagingMode { ProgressView() }
+                if store.stagingModeFailed {
+                    Text(store.text(.staging_mode_error)).foregroundColor(.red).font(ReadingFont.sans(13))
+                }
+                Divider().background(Color(ChapterStyle.border))
                 VStack(alignment: .leading, spacing: 14) {
                     Text(store.text.publish_date(publish_date: "14.07.2026"))
                     Text(store.text.plural_sample(count: 1))

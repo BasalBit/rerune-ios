@@ -56,6 +56,9 @@
 "see_all" = "Shiko të gjitha";
 "session_note" = "Shenjuesit dhe ecuria e leximit ruhen gjatë këtij sesioni të aplikacionit.";
 "settings_description" = "Provo një botim tjetër dhe rifresko fjalët e tregimeve të tua.";
+"staging_mode" = "Staging mode";
+"staging_mode_description" = "Preview draft translations before they are published.";
+"staging_mode_error" = "Staging mode could not be switched.";
 "story_body_primary" = "Mëngjesin kur lumi u zhduk nga hartat, Ada mori me vete një laps, një dardhë dhe busullën e gjyshit. Jashtë, uji vazhdonte të rridhte. Ajo e dëgjonte nga dritarja e kuzhinës.";
 "story_body_secondary" = "Ajo eci derisa rruga u bë shteg dhe shtegu mbeti vetëm një gjurmë e lehtë në bar. Te kthesa qëndronte një varkëtar me një fletore bosh. Ai po priste dikë që dinte të dëgjonte.";
 "story_by" = "Një tregim nga %1$@";

@@ -56,6 +56,9 @@
 "see_all" = "Ver todo";
 "session_note" = "Los marcadores y el progreso se conservan durante esta sesión.";
 "settings_description" = "Prueba otra edición y actualiza los textos de tus historias.";
+"staging_mode" = "Modo de staging";
+"staging_mode_description" = "Previsualiza las traducciones en borrador antes de publicarlas.";
+"staging_mode_error" = "No se pudo cambiar el modo de staging.";
 "story_body_primary" = "La mañana en que el río desapareció de los mapas, Ada guardó un lápiz, una pera y la brújula de su abuelo. Afuera, el agua seguía corriendo. La oía desde la cocina.";
 "story_body_secondary" = "Caminó hasta que el camino fue apenas una huella en la hierba. En la curva esperaba un barquero con un cuaderno vacío. Esperaba a alguien que supiera escuchar.";
 "story_by" = "Una historia de %1$@";

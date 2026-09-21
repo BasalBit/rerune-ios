@@ -5,8 +5,9 @@ struct ChapterApp: App {
     @StateObject private var store: ChapterStore
 
     init() {
+        ChapterSDK.configure()
         ChapterStyle.verifyFonts()
-        _store = StateObject(wrappedValue: ChapterStore())
+        _store = StateObject(wrappedValue: ChapterStore(runtime: ChapterSDK.runtime()))
     }
 
     var body: some Scene {

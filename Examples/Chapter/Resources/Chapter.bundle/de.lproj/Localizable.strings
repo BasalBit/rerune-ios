@@ -56,6 +56,9 @@
 "see_all" = "Alle ansehen";
 "session_note" = "Lesezeichen und Lesefortschritt bleiben während dieser Sitzung erhalten.";
 "settings_description" = "Probiere eine andere Ausgabe und aktualisiere die Texte deiner Geschichten.";
+"staging_mode" = "Staging-Modus";
+"staging_mode_description" = "Zeige Entwurfsübersetzungen an, bevor sie veröffentlicht werden.";
+"staging_mode_error" = "Der Staging-Modus konnte nicht gewechselt werden.";
 "story_body_primary" = "Als der Fluss von den Karten verschwand, packte Ada einen Bleistift, eine Birne und den Kompass ihres Großvaters ein. Draußen floss das Wasser noch immer. Sie hörte es durch das Küchenfenster.";
 "story_body_secondary" = "Sie ging, bis die Straße zum Pfad wurde und der Pfad nur noch eine Spur im Gras war. An der Biegung wartete ein Fährmann mit einem leeren Heft auf jemanden, der zuhören konnte.";
 "story_by" = "Eine Geschichte von %1$@";

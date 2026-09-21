@@ -56,6 +56,9 @@
 "see_all" = "Tout voir";
 "session_note" = "Vos favoris et votre progression de lecture sont conservés pendant cette session.";
 "settings_description" = "Essayez une autre édition et actualisez les mots de vos histoires.";
+"staging_mode" = "Mode de staging";
+"staging_mode_description" = "Prévisualisez les traductions en brouillon avant leur publication.";
+"staging_mode_error" = "Impossible de changer de mode de staging.";
 "story_body_primary" = "Le matin où la rivière disparut des cartes, Ada emporta un crayon, une poire et la boussole de son grand-père. Dehors, l’eau coulait toujours. Elle l’entendait depuis la fenêtre de la cuisine.";
 "story_body_secondary" = "Elle marcha jusqu’à ce que la route devienne un sentier, puis que le sentier ne soit plus qu’une trace dans l’herbe. Au détour de la rivière se tenait un passeur avec un carnet vide. Il attendait quelqu’un qui sache écouter.";
 "story_by" = "Une histoire de %1$@";

@@ -13,13 +13,13 @@
 		D76660EE41AC4D78B588BE9E /* ChapterReaderController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E6C94E28B3A363909F85B6F; };
 		A9C81B24D9D02A0752024EBD /* ChapterViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CF8748D7E89244F81496D75; };
 		2F8BBE343A7F7015569E1A97 /* ReadingSettingsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71B2FA56CC55055B765F9DED; };
+		079D32C5C35A2350FF13020E /* ChapterSDK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 330A4D17DE941AF893006E5C; };
 		D232944E579B910FF5E57B65 /* ChapterStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15888B458328937DACE66E1E; };
-		29769468E6041025C9941F37 /* ChapterKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61021A2BF3AB0A249D05627E; };
 		28D4EE884616F4372A999E16 /* ChapterStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39597E8FFC6B83189478191B; };
 		85EE6EC9A9739B5CF96C528B /* ChapterStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = D771099BFD0022929AB587DB; };
 		DB9F38A77A743E0ACF7A01C3 /* CoverArtwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FEF67A3270BA8DAB3C041BE; };
 		A82CFD402573AB8601034366 /* ReadingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 593B721903D8700C0E2C85FC; };
-		D338B39460B32FD5BC4CB4A6 /* ReRuneResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = CCC9CC50FFDF3D02DE8155FD; };
+		D338B39460B32FD5BC4CB4A6 /* Chapter.bundle in Resources */ = {isa = PBXBuildFile; fileRef = CCC9CC50FFDF3D02DE8155FD; };
 		6EBF7978C8D6E700835AA432 /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = 11F270E02CACF08F1AACE4B8; };
 		98E4B844821CCF5A3637BFDF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 98FC7A4D1BC1818E306406A8; };
 		1A1111111111111111111104 /* ReRune in Frameworks */ = {isa = PBXBuildFile; productRef = 1A1111111111111111111902 /* ReRune */; };
@@ -35,13 +35,13 @@
 		7E6C94E28B3A363909F85B6F /* ChapterReaderController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChapterReaderController.swift"; sourceTree = "<group>"; };
 		9CF8748D7E89244F81496D75 /* ChapterViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChapterViews.swift"; sourceTree = "<group>"; };
 		71B2FA56CC55055B765F9DED /* ReadingSettingsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReadingSettingsController.swift"; sourceTree = "<group>"; };
+		330A4D17DE941AF893006E5C /* ChapterSDK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ChapterSDK.swift"; sourceTree = "<group>"; };
 		15888B458328937DACE66E1E /* ChapterStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ChapterStore.swift"; sourceTree = "<group>"; };
-		61021A2BF3AB0A249D05627E /* ChapterKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ChapterKeys.swift"; sourceTree = "<group>"; };
 		39597E8FFC6B83189478191B /* ChapterStrings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ChapterStrings.swift"; sourceTree = "<group>"; };
 		D771099BFD0022929AB587DB /* ChapterStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ChapterStyle.swift"; sourceTree = "<group>"; };
 		7FEF67A3270BA8DAB3C041BE /* CoverArtwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/CoverArtwork.swift"; sourceTree = "<group>"; };
 		593B721903D8700C0E2C85FC /* ReadingState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sources/ReadingState.swift"; sourceTree = "<group>"; };
-		CCC9CC50FFDF3D02DE8155FD /* ReRuneResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = wrapper.plug-in; path = "Resources/ReRuneResources.bundle"; sourceTree = "<group>"; };
+		CCC9CC50FFDF3D02DE8155FD /* Chapter.bundle */ = {isa = PBXFileReference; lastKnownFileType = wrapper.plug-in; path = "Resources/Chapter.bundle"; sourceTree = "<group>"; };
 		11F270E02CACF08F1AACE4B8 /* Fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "Resources/Fonts"; sourceTree = "<group>"; };
 		98FC7A4D1BC1818E306406A8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Resources/Assets.xcassets"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -75,15 +75,15 @@
 			71B2FA56CC55055B765F9DED /* ReadingSettingsController.swift */,
 		); path = Sources; sourceTree = "<group>"; };
 		E72609354BE47CA2B147ED63 = {isa = PBXGroup; children = (
+			330A4D17DE941AF893006E5C /* ChapterSDK.swift */,
 			15888B458328937DACE66E1E /* ChapterStore.swift */,
-			61021A2BF3AB0A249D05627E /* ChapterKeys.swift */,
 			39597E8FFC6B83189478191B /* ChapterStrings.swift */,
 			D771099BFD0022929AB587DB /* ChapterStyle.swift */,
 			7FEF67A3270BA8DAB3C041BE /* CoverArtwork.swift */,
 			593B721903D8700C0E2C85FC /* ReadingState.swift */,
-			CCC9CC50FFDF3D02DE8155FD /* ReRuneResources.bundle */,
+			CCC9CC50FFDF3D02DE8155FD /* Chapter.bundle */,
 			11F270E02CACF08F1AACE4B8 /* Fonts */,
-		); name = "Shared"; path = ../Shared; sourceTree = "<group>"; };
+		); name = "Shared Chapter"; path = ../Chapter; sourceTree = "<group>"; };
 		6A21AE21EA8FA80B8CA8158C = {isa = PBXGroup; children = (
 			1A1111111111111111111205,
 		); path = Config; sourceTree = "<group>"; };
@@ -135,7 +135,7 @@
 			knownRegions = (en, de, es, fr, it, pt, sq, Base);
 			mainGroup = 1A1111111111111111111401;
 			packageReferences = (
-				1A1111111111111111111901 /* XCRemoteSwiftPackageReference "rerune-ios" */,
+				1A1111111111111111111901 /* XCLocalSwiftPackageReference "../.." */,
 			);
 			productRefGroup = 1A1111111111111111111402 /* Products */;
 			projectDirPath = "";
@@ -151,7 +151,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D338B39460B32FD5BC4CB4A6 /* ReRuneResources.bundle in Resources */,
+				D338B39460B32FD5BC4CB4A6 /* Chapter.bundle in Resources */,
 				6EBF7978C8D6E700835AA432 /* Fonts in Resources */,
 				98E4B844821CCF5A3637BFDF /* Assets.xcassets in Resources */,
 			);
@@ -170,8 +170,8 @@
 				D76660EE41AC4D78B588BE9E /* ChapterReaderController.swift in Sources */,
 				A9C81B24D9D02A0752024EBD /* ChapterViews.swift in Sources */,
 				2F8BBE343A7F7015569E1A97 /* ReadingSettingsController.swift in Sources */,
+				079D32C5C35A2350FF13020E /* ChapterSDK.swift in Sources */,
 				D232944E579B910FF5E57B65 /* ChapterStore.swift in Sources */,
-				29769468E6041025C9941F37 /* ChapterKeys.swift in Sources */,
 				28D4EE884616F4372A999E16 /* ChapterStrings.swift in Sources */,
 				85EE6EC9A9739B5CF96C528B /* ChapterStyle.swift in Sources */,
 				DB9F38A77A743E0ACF7A01C3 /* CoverArtwork.swift in Sources */,
@@ -281,21 +281,17 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-		1A1111111111111111111901 /* XCRemoteSwiftPackageReference "rerune-ios" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/BasalBit/rerune-ios.git";
-			requirement = {
-				kind = exactVersion;
-				version = 1.1.1;
-			};
+/* Begin XCLocalSwiftPackageReference section */
+		1A1111111111111111111901 /* XCLocalSwiftPackageReference "../.." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../..;
 		};
-/* End XCRemoteSwiftPackageReference section */
+/* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		1A1111111111111111111902 /* ReRune */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 1A1111111111111111111901 /* XCRemoteSwiftPackageReference "rerune-ios" */;
+			package = 1A1111111111111111111901 /* XCLocalSwiftPackageReference "../.." */;
 			productName = ReRune;
 		};
 /* End XCSwiftPackageProductDependency section */

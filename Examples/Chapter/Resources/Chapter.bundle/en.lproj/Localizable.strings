@@ -56,6 +56,9 @@
 "see_all" = "View all";
 "session_note" = "Bookmarks and reading progress stay with you during this app session.";
 "settings_description" = "Try another edition and refresh the words in your stories.";
+"staging_mode" = "Staging mode";
+"staging_mode_description" = "Preview draft translations before they are published.";
+"staging_mode_error" = "Staging mode could not be switched.";
 "story_body_primary" = "On the morning the river vanished from the maps, Ada packed a pencil, a pear, and her grandfather's compass. Outside, the water was still running. She could hear it from the kitchen window.";
 "story_body_secondary" = "She walked until the road became a path, and the path became a suggestion in the grass. At the bend stood a ferryman with an empty notebook. He had been waiting for someone who knew how to listen.";
 "story_by" = "A story by %1$@";

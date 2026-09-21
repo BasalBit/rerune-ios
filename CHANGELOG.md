@@ -2,12 +2,60 @@
 
 ## Unreleased
 
-- Made both example projects resolve published SDK 1.1.1 through Swift Package
-  Manager with checked-in lockfiles. The entire `Examples/` folder can be copied
-  and built independently, without an SDK source checkout or root manifest.
-- Consolidated example code, fonts, and translations under `Examples/Shared`.
-  Removed the obsolete `Chapter` directory and test-only SDK/runtime adapter.
-- Documented standalone setup, OTA configuration, and native translation editing.
+## 1.2.0 (2026-09-21)
+
+- Reworked staging-mode persistence around lazily derived, isolated namespaces.
+  The staging namespace is derived idempotently from the setup store on first
+  staging-mode use and never exists for integrators that stay in production
+  mode. Reads create no storage, so a mode that never writes leaves no trace.
+  Disk stores derive a sibling `ReRuneGenericV1_staging` directory with
+  identical file shapes; stores without namespace support degrade staging mode
+  to memory-only persistence. Persisted values carry a staging marker that
+  reads filter, so shared physical storage cannot leak snapshots between
+  modes.
+- Aligned the synchronization core with a memory-first session model: a
+  namespace is read into memory once per mode activation, unchanged
+  synchronizations perform zero store operations, writes commit to the
+  namespace before memory, and locale ETags are only revalidated against the
+  endpoint URL they were issued for.
+- Update checks now capture their mode and activation epoch once per check and
+  coalesce overlapping checks for the same activation into one operation. A
+  check superseded by a mode switch aborts at its next staleness guard and
+  commits nothing, even when later switches return to the original Boolean
+  mode.
+- Added `reRuneSetStagingMode(_:)` for switching between production and
+  staging mode after setup. The call rebuilds cached runtime state from the
+  selected mode's cache namespace, immediately performs an update check in
+  that mode, and returns its `ReRuneUpdateResult`. An update check superseded
+  by the switch discards its remaining results instead of applying them across
+  modes, and calling the function before setup throws
+  `ReRuneStagingModeError.setupRequired`.
+- Added the synchronous `reRuneIsStagingModeEnabled` value so integrations can
+  inspect the current setup session's active mode. It reflects the setup
+  argument and updates before a runtime switch begins synchronization.
+- Added a Draft preview toggle to both example settings screens. The toggle
+  switches the SDK's staging mode at runtime through `reRuneSetStagingMode`,
+  immediately resynchronizes, surfaces the refresh outcome in the existing
+  refresh panel, blocks overlapping variant and refresh operations, and is
+  never persisted, so the setup-applied mode returns on the next launch.
+- Added opt-in SDK staging mode through the `staging:` setup argument, default
+  `false`. With `staging: true`, both the manifest and every locale request
+  carry exactly one `staging=true` parameter, locale requests omit the
+  production `version` and `target_version` cursors, and every locale request
+  runs on every sync because published versions do not track draft edits.
+- In staging mode, locale 200 responses replace the cached and in-memory locale
+  document with the delivered full snapshot, so edited, deleted, disabled, and
+  never-published draft keys appear or disappear on the next sync. The empty
+  snapshot clears the locale. A 304 retains the exact snapshot behind the
+  persisted locale ETag, and a 304 without a usable cached snapshot retries
+  unconditionally.
+- Staging-mode persistence is fully separated from production: the staging
+  namespace stores the staging manifest, staging locale snapshots, and their
+  ETags, while production state and the persisted variation preference stay in
+  the production namespace. Switching the setup flag or the runtime toggle
+  never applies draft content or draft validators to production requests.
+- Locale cache records can now persist an optional locale ETag alongside the
+  snapshot. Records written by the previous ETag-free format remain readable.
 
 ## 1.1.1 (2026-09-14)
 
