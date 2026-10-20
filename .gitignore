@@ -5,3 +5,4 @@
 dist/
 DerivedData/
 **/xcuserdata/
+**/xcshareddata/swiftpm/Package.resolved
