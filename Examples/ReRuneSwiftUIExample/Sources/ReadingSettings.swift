@@ -18,7 +18,8 @@ struct ReadingSettings: View {
                         Text(store.text(.translation_variant)).font(ReadingFont.sans(17))
                         Text(store.variantSelected ? store.variantName : "Main").font(ReadingFont.sans(15))
                     }
-                }.disabled(store.changingVariant || store.refreshState == .busy).tint(Color(ChapterStyle.accent))
+                }.disabled(store.changingVariant || store.refreshState == .busy || store.changingStagingMode)
+                    .tint(Color(ChapterStyle.accent))
                     .accessibilityIdentifier("variant")
                 if store.changingVariant { ProgressView() }
                 if store.variantFailed {

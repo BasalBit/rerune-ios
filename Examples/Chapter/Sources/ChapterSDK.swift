@@ -53,6 +53,7 @@ enum ChapterSDK {
                 case .updated: return .updated
                 case .noChange: return .unchanged
                 case .failed: return .failed
+                @unknown default: return .unchanged
                 }
             },
             selectVariant: { selected in
@@ -66,6 +67,7 @@ enum ChapterSDK {
                 case .updated: return .updated
                 case .noChange: return .unchanged
                 case .failed: return .failed
+                @unknown default: return .unchanged
                 }
             },
             stagingModeActive: { reRuneIsStagingModeEnabled },

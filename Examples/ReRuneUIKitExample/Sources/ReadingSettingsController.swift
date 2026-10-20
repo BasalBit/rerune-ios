@@ -32,8 +32,8 @@ final class ReadingSettingsController: ChapterController {
         content.addArrangedSubview(row); content.addArrangedSubview(spinner); content.addArrangedSubview(variantError)
         let line = UIView(); line.backgroundColor = ChapterStyle.border; line.heightAnchor.constraint(equalToConstant: 1).isActive = true
         content.addArrangedSubview(line)
-        let draftPreview = text(.staging_mode, size: 17)
-        let draftNote = ChapterViews.label(13, color: ChapterStyle.secondary)
+        let stagingTitle = text(.staging_mode, size: 17)
+        let stagingNote = ChapterViews.label(13, color: ChapterStyle.secondary)
         stagingMode.onTintColor = ChapterStyle.accent; stagingMode.accessibilityIdentifier = "staging-mode"
         stagingMode.addAction(UIAction { [weak self] _ in
             guard let self else { return }
@@ -42,7 +42,7 @@ final class ReadingSettingsController: ChapterController {
             Task { await self.store.setStagingMode(enabled) }
         }, for: .valueChanged)
         let stagingRow = ChapterViews.stack(
-            [ChapterViews.stack([draftPreview, draftNote], spacing: 6), stagingMode],
+            [ChapterViews.stack([stagingTitle, stagingNote], spacing: 6), stagingMode],
             horizontal: true
         )
         stagingRow.alignment = .center
@@ -51,11 +51,11 @@ final class ReadingSettingsController: ChapterController {
         let stagingLine = UIView(); stagingLine.backgroundColor = ChapterStyle.border; stagingLine.heightAnchor.constraint(equalToConstant: 1).isActive = true
         content.addArrangedSubview(stagingLine)
         let date = ChapterViews.label(color: ChapterStyle.secondary), one = ChapterViews.label(color: ChapterStyle.secondary), two = ChapterViews.label(color: ChapterStyle.secondary)
-        bind { [weak store, weak date, weak one, weak two, weak draftNote] in
+        bind { [weak store, weak date, weak one, weak two, weak stagingNote] in
             guard let store else { return }
             date?.text = store.text.publish_date(publish_date: "14.07.2026")
             one?.text = store.text.plural_sample(count: 1); two?.text = store.text.plural_sample(count: 2)
-            draftNote?.text = store.text(.staging_mode_description)
+            stagingNote?.text = store.text(.staging_mode_description)
         }
         content.addArrangedSubview(ChapterViews.stack([date, one, two], spacing: 14))
         content.addArrangedSubview(RefreshPanel(store: store)); content.addArrangedSubview(text(.session_note, size: 13, color: ChapterStyle.secondary))
@@ -64,7 +64,7 @@ final class ReadingSettingsController: ChapterController {
     override func rebind() {
         super.rebind()
         variant.setOn(store.variantSelected, animated: false)
-        variant.isEnabled = !store.changingVariant && store.refreshState != .busy
+        variant.isEnabled = !store.changingVariant && store.refreshState != .busy && !store.changingStagingMode
         variant.accessibilityLabel = store.text(.translation_variant)
         variantName.text = store.variantSelected ? store.variantName : "Main"
         variantError.isHidden = !store.variantFailed; variantError.text = store.text(.edition_change_error)

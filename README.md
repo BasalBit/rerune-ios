@@ -316,9 +316,9 @@ Open `Examples/ReRuneExamples.xcworkspace` to try both demo apps:
 - `ReRuneUIKitExample`
 - `ReRuneSwiftUIExample`
 
-Both examples use the same demo OTA publish id.
+Both examples use the same demo OTA publish ID, set in each app's `Config/Example.xcconfig`.
 
-They mirror the welcome/story demo flows kept in the source repo examples while consuming the published package instead of the local workspace package.
+They consume ReRune exactly like a customer app: Swift Package Manager resolves the released SDK from this repository with the Up to Next Major Version rule. Open the workspace and Xcode downloads the release; no local SDK checkout is involved.
 
 ## License
 
