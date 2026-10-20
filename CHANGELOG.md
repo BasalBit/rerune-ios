@@ -2,6 +2,32 @@
 
 ## Unreleased
 
+## 1.3.0 (2026-10-20)
+
+### SDK consumer changes
+
+- The SDK now requests the manifest from
+  `https://cdn.rerune.io/api/ota/<otaPublishId>/manifest.json`. The publish ID
+  is trimmed and sent as one percent-encoded URL path segment, never as a
+  request header. Locale requests keep using the URLs that the manifest
+  returns.
+- Locale files follow the CDN file layout. A first load or a changed
+  `minimum_delta_base_version` requests the manifest locale URL unchanged
+  (for example `.../sq/88.json`). An update from a cached version prepends
+  that version and `..` to the file name (for example `.../sq/86..88.json`).
+  The `version` and `target_version` query parameters are no longer sent.
+- Every manifest and locale request now reaches the network. The SDK uses
+  its own `URLSession` with no local HTTP cache instead of
+  `URLSession.shared`. Previously the CDN's `Cache-Control: max-age=300` let
+  iOS answer a manifest refresh from the app's HTTP cache for up to 5
+  minutes, so newly published changes were missed until the cache expired or
+  the app was reinstalled. App level `URLProtocol` classes registered
+  globally no longer see SDK requests.
+- `.info` and `.verbose` logs show the publish ID as part of the logged
+  request URLs. The publish ID is not a secret.
+- No public API changes. `reRuneSetup(otaPublishId:...)` keeps its name and
+  meaning.
+
 ## 1.2.0 (2026-09-21)
 
 ### SDK consumer changes

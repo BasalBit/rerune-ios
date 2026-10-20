@@ -115,7 +115,7 @@ reRuneSetup(
 | `.info` | Adds operation names, sanitized request method/URL, synchronization decisions, and response status codes. |
 | `.verbose` | Adds full request URLs, headers, bodies, failure causes, and stack traces. |
 
-Levels are cumulative and every message starts with `ReRune:`. Use `.verbose` only as an explicit sensitive-data diagnostic mode: it may expose the OTA publish ID, credentials, and translation content. Headers, bodies, credentials, causes, and stack traces are never logged below `.verbose`.
+Levels are cumulative and every message starts with `ReRune:`. Use `.verbose` only as an explicit sensitive-data diagnostic mode: it may expose credentials and translation content. Headers, bodies, credentials, causes, and stack traces are never logged below `.verbose`. The OTA publish ID is not a secret: from `.info`, logged request URLs show it as part of the URL path.
 
 ## Runtime language picker
 
@@ -265,7 +265,7 @@ Foundation chooses the plural category using the device's current formatting loc
 - Manifest endpoint is fixed by SDK and has no platform query parameter.
 - Manifest parsing is strict: root and locale `version` values are non-negative JSON integers; `locales` is keyed; `main_language` is required; and every locale has an absolute `url`.
 - Manifest locale keys and `main_language` must use `language[-Script][-REGION]`, where language is 2 to 3 ASCII letters, script is 4 ASCII letters, and region is either 2 ASCII letters or 3 digits. `_` separators and surrounding whitespace are normalized.
-- Every manifest locale requires a non-negative `minimum_delta_base_version`. Exact version/minimum matches skip that locale. A missing cache record or minimum change requests a full replacement with `target_version`; otherwise changed versions request a delta with the stored successful `version` and the manifest `target_version`.
+- Every manifest locale requires a non-negative `minimum_delta_base_version`. Exact version/minimum matches skip that locale. A missing cache record or minimum change requests the manifest locale URL unchanged as a full replacement (for example `.../sq/88.json`); otherwise changed versions request a delta by prepending the stored successful version and `..` to the file name (for example `.../sq/86..88.json`).
 - Locale `409` responses and manifests whose locale target is behind the stored successful version are treated as stale-manifest signals. ReRune retries the complete synchronization once after fetching the manifest without `If-None-Match`, then returns `.failed` if the refreshed state is still stale.
 - ETag revalidation applies only to the manifest. Locale requests never send `If-None-Match`, and a locale `304` is treated as an unsupported per-locale failure that preserves cached state.
 - `main_language` must normalize to a locale declared in the same manifest. Manifests without it are rejected; an invalid cached manifest and its locale bundles are purged during setup.
@@ -316,11 +316,9 @@ Open `Examples/ReRuneExamples.xcworkspace` to try both demo apps:
 - `ReRuneUIKitExample`
 - `ReRuneSwiftUIExample`
 
-Both apps use the same demo OTA publish ID and resolve published SDK 1.2.0
-directly through Swift Package Manager. Their native reading screens include
-language and edition selection, plus a session-scoped Staging mode toggle that
-resynchronizes through `reRuneSetStagingMode(_:)`. See the
-[example guide](Examples/README.md) for launch configuration and testing.
+Both examples use the same demo OTA publish id.
+
+They mirror the welcome/story demo flows kept in the source repo examples while consuming the published package instead of the local workspace package.
 
 ## License
 
