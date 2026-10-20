@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+## 1.3.1 (2026-10-20)
+
+### SDK consumer changes
+
+- Manifest and locale requests now send `User-Agent: rerune-ios/<version>`
+  (`rerune-ios/1.3.1` in this release), so CDN logs show which SDK version made
+  each request. It replaces the iOS default, which named the host app, its
+  build, and the CFNetwork and Darwin versions. No public API changes.
+
 ## 1.3.0 (2026-10-20)
 
 ### SDK consumer changes
