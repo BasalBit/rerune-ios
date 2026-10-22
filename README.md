@@ -47,7 +47,7 @@ ReRune can make dashboard-only languages available even when the app bundle ship
 
 When German is selected with `reRuneSetLocale("de")`, or when German is the user's platform-preferred language, `NSLocalizedString(...)` calls can render the dashboard-delivered German strings after the first successful fetch. On the next launch, `reRuneSetup(...)` restores the cached manifest and German strings before the UI is shown, so the same language can render immediately without a compiled `de.lproj`.
 
-When the requested OTA locale does not contain a key, ReRune next checks the manifest's `main_language` OTA locale before falling back to the app's bundled Foundation localization. The backend owns this fallback; applications do not need another setup parameter. Cached manifests restore the same fallback synchronously on later launches.
+Lookup walks the current language from most to least specific, then the manifest's `main_language`, and tries each step OTA first and then in the app's bundled strings. For `de-AT` with main language `en`: OTA `de-AT`, bundled `de-AT`, OTA `de`, bundled `de`, OTA `en`, bundled `en`. The current language is the one passed to `reRuneSetLocale`, or the phone language when none is set. The backend owns this fallback; applications do not need another setup parameter. Cached manifests restore the same fallback synchronously on later launches.
 
 This runtime language expansion is app-level. iOS Settings language lists, App Store language metadata, native system strings, and new string keys still require an app release.
 
@@ -130,16 +130,17 @@ reRuneSetup(
 | Level | Behavior |
 | --- | --- |
 | `.off` | Default. Emits no SDK diagnostics. |
-| `.error` | High-level failures and warnings about ignored remote values, without causes or sensitive request/response details. |
+| `.error` | High-level failures and warnings about rejected remote values, without causes or sensitive request/response details. |
 | `.info` | Adds operation names, sanitized request method/URL, synchronization decisions, and response status codes. |
 | `.verbose` | Adds full request URLs, headers, bodies, failure causes, and stack traces. |
 
 Levels are cumulative and every message starts with `ReRune:`. Use `.verbose` only as an explicit sensitive-data diagnostic mode: it may expose credentials and translation content. Headers, bodies, credentials, causes, and stack traces are never logged below `.verbose`. The OTA publish ID is not a secret: from `.info`, logged request URLs show it as part of the URL path.
 
-When ReRune ignores a remote value, it logs one warning per key from `.error`:
+When ReRune rejects a locale because of an incompatible remote value, it logs one warning per key and one for the locale from `.error`:
 
 ```text
-ReRune: Warning: Locale de ignored the remote value for key "items_count" because it reads format arguments that the value shipped in the app does not pass. Lookup falls back to the next available value.
+ReRune: Warning: Locale de rejected the remote value for key "items_count" because it reads format arguments that the value shipped in the app does not pass.
+ReRune: Warning: Locale de was not applied because 1 remote value is incompatible. Lookup keeps the previously applied values for this locale, or falls back to the next available value.
 ```
 
 ## Runtime language picker
@@ -314,18 +315,19 @@ Foundation chooses the plural category using the device's current formatting loc
   supported.
 - ReRune compares each remote value with the value your app ships for the same
   key. A remote value that reads a format argument your shipped value does not
-  read, or reads it with a different kind, is ignored, and lookup falls back to
-  the main language and then the bundled string. This keeps a dashboard edit
-  from changing the arguments your `String(format:)` calls pass. Keys your app
-  does not ship are not checked. When the shipped value is a format string,
-  literal percent signs in remote text are escaped. Each ignored value is
-  logged as a warning from the `.error` log level.
-- A visible token without an exact matching declaration makes only that plain
-  or plural key unavailable remotely. ReRune still caches the complete record
-  and continues through the normal locale, main-language, and bundled fallback
-  chain. In a delta, that replacement also removes any previous override.
-- Other malformed declarations, token syntax, or rendering structures still
-  reject the locale atomically. Unknown non-rendering fields are preserved and
+  read, or reads it with a different kind, rejects the whole locale update.
+  This keeps a dashboard edit from changing the arguments your
+  `String(format:)` calls pass. Keys your app does not ship are not checked.
+  When the shipped value is a format string, literal percent signs in remote
+  text are escaped.
+- A visible token without an exact matching declaration also rejects the whole
+  locale update.
+- A rejected locale keeps its previously applied values, or lookup continues
+  with the next step of the lookup order. Nothing is thrown to your
+  app. Each rejected key and the rejected locale are logged as warnings from
+  the `.error` log level.
+- Malformed declarations, token syntax, or rendering structures also reject
+  the locale atomically. Unknown non-rendering fields are preserved and
   ignored at runtime.
 - Dashboard-only locales appear in `reRuneAvailableLocales` only after their locale payload and manifest metadata are successfully committed, or on startup when a valid applied-locale cache record restores them.
 - Each successful locale commit stores the manifest entry's `name`, `url`, `version`, and `minimum_delta_base_version` with a complete canonical generic JSON snapshot. A failed locale retains its previous applied metadata; the cached raw manifest remains only the transport snapshot used for later retries.

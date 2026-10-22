@@ -2,6 +2,37 @@
 
 ## Unreleased
 
+## 1.5.0 (2026-10-22)
+
+### SDK consumer changes
+
+- A locale payload with any incompatible remote value is now rejected as a
+  whole. This covers a value that reads format arguments the shipped value
+  does not pass (since 1.4.0 such a value was ignored per key) and a
+  `{{placeholder}}` without a matching declaration (since 0.11.0 such a value
+  fell back per key). The previously applied values for that locale stay in
+  use, or lookup continues with the next step of the lookup order, so the app
+  never shows a partially applied update. Nothing is thrown to the
+  app: ReRune logs one warning per rejected key and one warning that the
+  locale was not applied, from the `.error` log level.
+- A cached locale that no longer matches the app's shipped formats (for
+  example after an app update) is not restored at launch and is logged the
+  same way.
+- A rejected locale version is not downloaded again until a new version is
+  published, the variant changes, or the app is updated (marketing version or
+  build number). The rejection is remembered across launches.
+- Lookup order changed. Each step of the current language, from most to
+  least specific, is tried OTA and then in the app's bundled strings, followed
+  by the main language the same way. For `de-AT` with main language `en`: OTA
+  `de-AT`, bundled `de-AT`, OTA `de`, bundled `de`, OTA `en`, bundled `en`.
+  Previously the main language's OTA value won over the app's bundled text in
+  the current language, and a key that only `de.lproj` contained was skipped
+  for `de-AT`. The current language is the one passed to `reRuneSetLocale`,
+  or the phone language when none is set.
+- `reRuneSetVariant` no longer fails when one locale has an incompatible value
+  for the new variant. That locale falls back and is logged, and the variant
+  change applies to the other locales.
+
 ## 1.4.1 (2026-10-22)
 
 ### SDK consumer changes
