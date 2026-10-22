@@ -66,6 +66,10 @@ reRuneRevisionPublisher
     .store(in: &cancellables)
 ```
 
+Rebinding on `reRuneRevisionPublisher` is the supported UIKit pattern on every
+iOS version. On iOS 26, UIKit also refreshes strings that you look up in
+`viewWillLayoutSubviews`, because it tracks the lookup like an observed value.
+
 ## SwiftUI quick start
 
 ```swift
@@ -92,8 +96,23 @@ import SwiftUI
 struct ContentView: View {
     var body: some View {
         Text(NSLocalizedString("title", comment: ""))
-            .reRuneObserveRevision()
     }
+}
+```
+
+On iOS 17 and later, views that look up strings in their `body` refresh
+automatically when ReRune applies new translations. Strings resolved outside
+`body`, for example in an initializer or a view model, do not.
+
+On iOS 15 and 16, apply `reRuneObserveRevision()` once near the root of the
+screens that show ReRune strings. It rebuilds that subtree when translations
+change, which also resets its view state, such as scroll positions and text
+input. On iOS 17 and later it changes nothing.
+
+```swift
+WindowGroup {
+    ContentView()
+        .reRuneObserveRevision()
 }
 ```
 
@@ -111,11 +130,17 @@ reRuneSetup(
 | Level | Behavior |
 | --- | --- |
 | `.off` | Default. Emits no SDK diagnostics. |
-| `.error` | High-level failures only, without causes or sensitive request/response details. |
+| `.error` | High-level failures and warnings about ignored remote values, without causes or sensitive request/response details. |
 | `.info` | Adds operation names, sanitized request method/URL, synchronization decisions, and response status codes. |
 | `.verbose` | Adds full request URLs, headers, bodies, failure causes, and stack traces. |
 
 Levels are cumulative and every message starts with `ReRune:`. Use `.verbose` only as an explicit sensitive-data diagnostic mode: it may expose credentials and translation content. Headers, bodies, credentials, causes, and stack traces are never logged below `.verbose`. The OTA publish ID is not a secret: from `.info`, logged request URLs show it as part of the URL path.
+
+When ReRune ignores a remote value, it logs one warning per key from `.error`:
+
+```text
+ReRune: Warning: Locale de ignored the remote value for key "items_count" because it reads format arguments that the value shipped in the app does not pass. Lookup falls back to the next available value.
+```
 
 ## Runtime language picker
 
@@ -287,6 +312,14 @@ Foundation chooses the plural category using the device's current formatting loc
 - Placeholder tokens use `{{name}}`. Names are case-sensitive; `string` and
   `int` declaration types are case-insensitive; multiple placeholders are
   supported.
+- ReRune compares each remote value with the value your app ships for the same
+  key. A remote value that reads a format argument your shipped value does not
+  read, or reads it with a different kind, is ignored, and lookup falls back to
+  the main language and then the bundled string. This keeps a dashboard edit
+  from changing the arguments your `String(format:)` calls pass. Keys your app
+  does not ship are not checked. When the shipped value is a format string,
+  literal percent signs in remote text are escaped. Each ignored value is
+  logged as a warning from the `.error` log level.
 - A visible token without an exact matching declaration makes only that plain
   or plural key unavailable remotely. ReRune still caches the complete record
   and continues through the normal locale, main-language, and bundled fallback
@@ -308,6 +341,14 @@ Foundation chooses the plural category using the device's current formatting loc
 - Native OTA override support in phase 1 is limited to `Bundle.main` and the default `Localizable` table.
 - SwiftUI `Text("key")`, `LocalizedStringKey`, and `LocalizedStringResource` are not supported for OTA interception in phase 1; use `NSLocalizedString(...)` inside SwiftUI views instead.
 - Periodic refresh policy uses split fields: `periodicIntervalInHours` + `periodicIntervalInDays`.
+- `checkOnStart` (default `true`) checks for updates when the app opens,
+  both on launch and on a return to the foreground, at most once every
+  15 minutes after a successful check. A failed check is retried on the next
+  open after one minute. `false` turns off both.
+- A periodic interval also triggers a check on a return to the foreground
+  once it has passed, because iOS does not run the timer while the app is
+  suspended.
+- `reRuneCheckForUpdates()` always checks, regardless of these intervals.
 
 ## Example apps
 

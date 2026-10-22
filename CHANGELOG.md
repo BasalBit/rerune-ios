@@ -2,6 +2,46 @@
 
 ## Unreleased
 
+## 1.4.0 (2026-10-22)
+
+### SDK consumer changes
+
+- Remote translations can no longer read format arguments that the app does
+  not pass. ReRune compares each remote value with the value the app ships for
+  the same key. A remote value that reads an argument the shipped value does
+  not read, or reads one with a different kind (for example an object where
+  the app passes an integer), is ignored, and lookup falls back through the
+  main language and the bundled strings. Keys the app does not ship are not
+  checked.
+- When the shipped value is a format string, literal percent signs in a remote
+  value are escaped, so `Save 50% today` displays unchanged when the app
+  formats it. Previously such text could be read as a format directive.
+- On iOS 17 and later, SwiftUI views that look up ReRune strings in their
+  `body` refresh automatically when translations change. No modifier is
+  needed.
+- Fixed `reRuneObserveRevision()` not refreshing the views it wraps. On iOS 15
+  and 16 it now rebuilds the wrapped subtree when translations change, which
+  also resets that subtree's view state. On iOS 17 and later it changes
+  nothing, because views refresh automatically.
+- `checkOnStart` now also covers returns to the foreground: ReRune checks for
+  updates when the app opens, whether iOS launches it or resumes it, at most
+  once every 15 minutes after a successful check. A failed check is retried on
+  the next open after one minute. `checkOnStart: false` turns off both, so a
+  return to the foreground does not check either.
+- The periodic interval now works across suspensions. iOS does not run the
+  in-process timer while the app is suspended, so ReRune also checks on the
+  next return to the foreground once the interval has passed since the last
+  successful check, even with `checkOnStart: false`. The timer now waits for
+  the interval since the last check of any kind, so a check started by the app
+  opening or by `reRuneCheckForUpdates()` postpones the next timer check.
+- `reRuneCheckForUpdates()` always starts a check, regardless of the
+  intervals above, and counts as the last check for them. No public API
+  changes.
+- ReRune now logs a warning for every remote value it ignores, naming the
+  locale, the key, and the reason (a placeholder mismatch or an incompatible
+  format). Warnings appear from the `.error` log level, so
+  `logLevel: .error` is enough to see when published content is not used.
+
 ## 1.3.1 (2026-10-20)
 
 ### SDK consumer changes
