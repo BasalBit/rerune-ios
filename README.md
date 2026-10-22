@@ -339,7 +339,7 @@ Foundation chooses the plural category using the device's current formatting loc
 - Persisted Variant selections are scoped by a digest of `otaPublishId` and
   stored separately from manifest and locale cache cleanup.
 - Native OTA override support in phase 1 is limited to `Bundle.main` and the default `Localizable` table.
-- SwiftUI `Text("key")`, `LocalizedStringKey`, and `LocalizedStringResource` are not supported for OTA interception in phase 1; use `NSLocalizedString(...)` inside SwiftUI views instead.
+- SwiftUI `Text("key")`, `LocalizedStringKey`, `LocalizedStringResource`, and `String(localized:)` are not supported for OTA interception in phase 1; use `NSLocalizedString(...)` instead. This also applies to apps that use String Catalogs (`.xcstrings`), whose compiled strings ReRune otherwise overrides and checks like `.strings` files.
 - Periodic refresh policy uses split fields: `periodicIntervalInHours` + `periodicIntervalInDays`.
 - `checkOnStart` (default `true`) checks for updates when the app opens,
   both on launch and on a return to the foreground, at most once every

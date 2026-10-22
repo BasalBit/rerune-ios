@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+## 1.4.1 (2026-10-22)
+
+### SDK consumer changes
+
+- Fixed the shipped format check for apps that use String Catalogs
+  (`.xcstrings`). A remote value for a key whose shipped plural sits inside a
+  device variation is now checked against that plural, so a value that reads
+  an integer where the app passes a decimal number is ignored instead of
+  showing a wrong number, and a compatible value is no longer ignored. A
+  plural without a shipped definition no longer counts as an integer
+  argument.
+- Fixed compatible remote values being ignored for shipped strings with
+  numbered plural substitutions, such as `%1$#@files@ in %2$#@folders@`,
+  which String Catalogs create for strings with several plurals.
+
 ## 1.4.0 (2026-10-22)
 
 ### SDK consumer changes
