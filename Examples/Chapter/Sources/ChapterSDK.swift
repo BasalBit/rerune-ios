@@ -11,16 +11,27 @@ enum ChapterSDK {
         return bundle
     }()
 
+    // Verbose SDK logging in Debug builds only. Release builds keep the SDK
+    // default level, .off.
+    #if DEBUG
+    private static let logLevel: ReRuneLogLevel = .verbose
+    #else
+    private static let logLevel: ReRuneLogLevel = .off
+    #endif
+
     static func configure() {
         let publishID = Bundle.main.object(forInfoDictionaryKey: "RERUNE_OTA_PUBLISH_ID") as? String
             ?? ProcessInfo.processInfo.environment["RERUNE_OTA_PUBLISH_ID"]
             ?? "replace-with-ota-publish-id"
+        // The saved language is selected before setup, so setup starts in it
+        // and only its lookup chain loads at launch. No saved language uses
+        // the device language.
+        reRuneSetLocale(UserDefaults.standard.string(forKey: localePreference))
         reRuneSetup(
             otaPublishId: publishID,
-            logLevel: .verbose,
+            logLevel: logLevel,
             staging: false
         )
-        reRuneSetLocale(UserDefaults.standard.string(forKey: localePreference))
     }
 
     @MainActor

@@ -2,6 +2,281 @@
 
 ## Unreleased
 
+## 1.6.0 (2026-11-06)
+
+### SDK consumer changes
+
+#### Upgrade notes
+
+- Keys the app does not ship: a remote value that reads arguments, for a key
+  that no language of the app has and whose name has no format directive (a
+  dashboard key such as `welcome_key`), is now used only when the lookup
+  passes a default value with a matching format, for example
+  `NSLocalizedString("welcome_key", value: "Welcome %@", comment: "")`.
+  Otherwise ReRune skips that value and logs a warning, so
+  `String(format: NSLocalizedString("welcome_key", comment: ""), name)` now
+  shows `welcome_key` instead of the remote text. 1.5.0 served such values
+  unchecked, and a value that did not match the call site crashed the app.
+  To keep remote values for such keys, ship a development language value for
+  them in the app, for example with `rerune pull`, or pass the format as the
+  default value. Remote values without arguments are not affected.
+- The format check of remote values now also covers keys whose value the app
+  ships only in its development language (or `Base.lproj`). A key that no
+  language of the app has but whose name contains format directives, such as
+  the `%lld keys` key of `Text("\(count) keys")`, is checked against its own
+  directives, and literal percent signs in its remote values are escaped. A
+  locale that 1.5.0 applied can therefore now be rejected as a whole, with
+  the usual warnings.
+- With `checkOnStart` on (the default), ReRune now checks for updates every
+  time the app returns to the foreground from the background: one manifest
+  request per return, answered with `304` when nothing changed. The limit of
+  one check every 15 minutes and the one minute retry wait no longer apply to
+  returns, and a return while a check is running joins it. Becoming active
+  without having been in the background (Control Center, a system alert, a
+  permission prompt) does not check, and launch still does not repeat the
+  startup check. `checkOnStart: false` still turns off both automatic checks,
+  and the periodic interval and `reRuneCheckForUpdates()` work as before.
+- To start in a language the user chose earlier, call `reRuneSetLocale` with
+  it right before `reRuneSetup`, for example
+  `reRuneSetLocale(UserDefaults.standard.string(forKey: "selectedLocale"))`.
+  Behavior change: 1.5.0's `reRuneSetup` cleared a language selected before
+  it, so an app that calls `reRuneSetLocale` before setup now starts in that
+  language instead of the device language. ReRune does not save the
+  selection, and it lasts for that first session only: every later
+  `reRuneSetup` clears it, so an app that calls `reRuneSetup` again and wants
+  to keep the language calls `reRuneSetLocale` with it after that setup. A
+  tag that is not a locale identifier uses the device language and is
+  logged. The `reRuneSetup` signatures are unchanged.
+- `reRuneObserveRevision()` is deprecated on iOS 17 and later, where it has
+  no effect because views that look up strings in `body` refresh
+  automatically. Apps with a minimum deployment target of iOS 17 or later get
+  a deprecation warning and can remove it. Apps that support iOS 15 or 16
+  keep it and see no warning.
+- iOS 15 and 16, physical devices, and a real iCloud or computer backup and
+  restore have not been tested yet.
+
+#### SwiftUI and lookups
+
+- SwiftUI `Text("key")`, and views that take a key directly, such as
+  `Button("key")`, `Label`, `Toggle`, and `navigationTitle`, now show ReRune
+  values for keys that the ReRune dashboard delivers, without code changes,
+  including Markdown. SwiftUI resolves these strings when it creates the
+  view, so screens opened after an update show the new values; a `Text`
+  already on screen may keep its previous value. Strings looked up in
+  `body`, such as `Text(NSLocalizedString("key", comment: ""))`, refresh on
+  screen on iOS 17 and later, or with `reRuneObserveRevision()` on iOS 15
+  and 16. Inside `.environment(\.locale, ...)` with a locale other than the
+  device's current locale, these views show the app's shipped strings.
+- A remote value reaches a call site only when its dashboard key equals the
+  key the app looks up, character for character. For keys shared with
+  Android, such as `welcome_key`, use `Text("key")` for strings without
+  arguments,
+  `Text(String(format: NSLocalizedString("welcome_key", comment: ""), name))`
+  for strings with arguments, and `String.localizedStringWithFormat` with
+  `NSLocalizedString` for plurals. An interpolated `Text` looks up the key
+  Swift generates from it: `Text("\(count) keys")` looks up `%lld keys`, and
+  a dashboard key such as `keys_count` does not reach it.
+- `Text("key")` follows the same lookup order as `NSLocalizedString`, and
+  only the default `Localizable` table of the main bundle is served.
+  `String(localized:)`, `LocalizedStringResource`, and
+  `AttributedString(localized:)` are not served by ReRune; use
+  `NSLocalizedString` for those strings. `String(localized:)` was observed to
+  show ReRune values on iOS 17; do not rely on it.
+- To serve `Text("key")`, ReRune writes each locale's accepted remote values
+  as string files into `Library/Caches/ReRuneRuntimeStrings`: a new copy at
+  each content change of a language in the lookup order and at each
+  `reRuneSetup`, about 1 MB for a language of 10,000 keys, kept until a later
+  launch writes its own files. Foundation keeps a bundle for every copy in
+  `Bundle.allBundles` until the app process ends. When the files cannot be
+  written or other code removes them, `NSLocalizedString` keeps its remote
+  values, and `Text("key")` keeps them too, except that a remote plural can
+  show the app's own string or the key, until new files are written. Code
+  that reads `bundleURL` of every entry of `Bundle.allBundles` (a crash
+  reporter, for example) keeps working.
+- On iOS 18.4 and later,
+  `Bundle.main.localizedString(forKey:value:table:localizations:)` returns
+  ReRune values when iOS resolves the requested languages to the current
+  language, the first language of ReRune's order; other requests keep the
+  system's lookup of the app's shipped strings. An empty language list, or
+  one with an entry that is not a string, reaches the system first, so on
+  iOS 17.0 it raises exactly as it does without ReRune.
+- Only `Bundle.main` itself is served, not another bundle object of the same
+  class. When another component set its own class on `Bundle.main` before
+  `reRuneSetup` (for example an in-app language library), ReRune now gives
+  `Bundle.main` a class derived from that class instead of replacing it, so
+  a cast to that class and its own lookups keep working for everything
+  ReRune does not serve. When `Bundle.main`
+  is observed with key value observing at setup, ReRune adds its lookups to
+  the observing class instead; once the last observer is removed, ReRune
+  serves no remote values until the next `reRuneSetup`. Each case logs a
+  warning. `localizedString(forKey:value:table:localizations:)` is added to
+  `Bundle.main` only where the system implements it, so `responds(to:)`
+  answers as it does without ReRune, and arguments of an unexpected type,
+  such as an `NSNull` key, reach the system unchanged.
+
+#### Language selection and loading
+
+- How ReRune picks the language: lookup now follows the language iOS picks
+  for the app, with ReRune's values on top. iOS chooses from the app's
+  bundled languages, its development language, and the languages ReRune has
+  saved from the dashboard, trying every language in the phone's list in
+  order (or the language selected with `reRuneSetLocale`, which is matched
+  like a phone language); the dashboard's main language comes last. At each
+  language, the ReRune value comes before the app's bundled string. An
+  update check that saves a language that matches the phone better changes
+  the language shown without a call to `reRuneSetLocale`, followed by one
+  refresh through `reRuneRevisionPublisher`. Examples:
+  - A Taiwan phone (`zh-Hant-TW`) in an app with `zh-TW` and `zh-Hant`
+    strings uses `zh-TW`, then `zh-Hant`. Plain `zh` is never used for a
+    Traditional Chinese phone; 1.5.0 could show Simplified text.
+  - A phone set to French, then Italian, in an app that ships only English
+    and has Italian on the dashboard now shows Italian; 1.5.0 used only the
+    first language of the phone's list.
+  - An `en-IN` phone in an app with `en` and `en-GB` uses `en-GB`, and a
+    `pt-PT` phone in an app with `en` and `pt-BR` uses `pt-BR`. 1.5.0 showed
+    `en` for these phones once it had a main language.
+  - A phone whose languages the app has in no form shows the app's
+    development language, as iOS does, before the main language. When the
+    two differ, this changes what 1.5.0 showed (the main language).
+- Languages now load on demand. `reRuneSetup` reads and parses only the
+  saved languages of the lookup order on the calling thread (1.5.0 parsed
+  every saved language there), so launch time and memory no longer grow with
+  the number of saved languages. Update checks still download every published
+  language, so switching works offline. `reRuneSetLocale` to a language that
+  is not loaded reads and parses it on the calling thread before it returns,
+  and unloads the languages the app no longer uses, so switching back loads
+  them again. A call that races a `reRuneSetup` on another thread can return
+  before the language loads. A memory warning unloads every language outside
+  the one in use and its fallbacks. ReRune keeps its reference to the string
+  bundle it wrote for SwiftUI `Text` of a language that left the order until
+  the next `reRuneSetup`, also after a memory warning, and Foundation keeps
+  every such bundle until the app process ends. When the language in use is
+  unexpectedly not loaded and loading it is not quick, a lookup shows the
+  app's own text and the language loads in the background, followed by one
+  refresh through `reRuneRevisionPublisher`. A saved language that does not
+  load leaves `reRuneAvailableLocales` and is downloaded again by the next
+  update check.
+
+#### Update checks and publishers
+
+- `reRuneAvailableLocalesPublisher` and
+  `reRuneAvailableLocaleDetailsPublisher` now send a value only when it
+  differs from the last value they sent, so an update check that changes
+  nothing (for example one answered with `304`) sends no event. 1.5.0 sent
+  both values at every setup and after every update check that applied a
+  manifest, changed or not. Every change of the language list or of a
+  language name is still sent.
+- A periodic interval longer than 366 days, such as `.max` used to mean
+  "never", now counts as 366 days, with a logged error, instead of crashing.
+
+#### Remote values and crash safety
+
+- ReRune no longer crashes or hangs the app in cases that were ReRune's own
+  doing, among them remote values that made `String(format:)`,
+  `String.localizedStringWithFormat`, or SwiftUI `Text` read arguments the
+  app never passes, deeply nested or oversized manifests and locale payloads,
+  `reRuneSetup` running again while another `reRuneSetup` or an update check
+  ran, duplicate cached locale files, and a shipped `.stringsdict` whose
+  plural rules refer to themselves. A crash that happens without ReRune as
+  well happens exactly as it does without ReRune. ReRune installs no signal
+  or exception handlers.
+- Remote values that would crash or hang the app when it formats them are
+  now left out for their key alone, with a warning that names the key, while
+  the rest of the locale applies. Examples: the `% s` in the French
+  `50 % sur tout` (to keep such a value, write it with a no-break space after
+  the percent sign; `50% off` is still shown), `%n`, `%P`, a star width or
+  precision (`%*d`) where the app passes no field width, an argument number
+  of 128 or more, `%S` where the app passes a C string for `%s`, a field
+  width taken from a number the app passes for another purpose, Markdown
+  that SwiftUI `Text` renders into a directive or as nothing, and Markdown
+  extended attributes with more than 64 brackets and braces. A Markdown
+  rendering that forms a directive the app's own value does not read rejects
+  the whole locale. A remote value ReRune leaves out falls back like a
+  missing value.
+- A remote value that drops a lower placeholder now rejects its locale when
+  the placeholder after it has another type, for example one that keeps
+  `{{folder}}` (text) but drops `{{count}}` (a number); dropping a
+  placeholder of the same type is still accepted. `&#37;`, `&#x25;`, and
+  `&percnt;` in remote values of formatted keys are now escaped like a
+  literal percent sign.
+- Limits: a locale payload larger than 32 MiB, with more than 200,000
+  records, nested deeper than 48 levels, or with a NUL byte is rejected like
+  any other invalid payload, and a manifest larger than 4 MiB, nested deeper
+  than 48 levels, or with a NUL byte fails (`.failed`). A value whose
+  Markdown check would exceed 256 KiB per text or 1 MiB per locale is left
+  out for its key with a warning.
+- Crash loop protection: when a launch ends twice while ReRune parses or
+  applies the same cached or downloaded locale payload, ReRune quarantines
+  that locale version: it removes the cached copy, does not download or
+  apply that version again until a new version is published or the app is
+  updated, and logs an error.
+- When other code empties the app's temporary directory while ReRune builds
+  the formats of remote plurals there, the build now fails like any other
+  failed plural build, which an update check logs as
+  `Locale <tag> synchronization failed.` while it keeps that language's
+  earlier values.
+- An empty remote value (`""`, or a message whose parts are all empty text)
+  now counts as no translation, so every lookup shows what it shows without
+  that value; 1.5.0 returned the empty string. In a remote plural, a count
+  whose form is empty shows the `other` form, and a plural whose every form
+  is empty, or an empty value of the selected Variant, counts as no
+  translation too. Whitespace is still a real value.
+
+#### Setup and logging
+
+- `reRuneSetup` now stops the app only for a publish ID it cannot use, and
+  says why in Release builds too: an empty or blank `otaPublishId`, as
+  before, and, new, an `otaPublishId` of `.` or `..`. In 1.5.0, optimized
+  builds, including the released binary, stopped without a message.
+- Other invalid setup values no longer stop the app. ReRune logs an error
+  (from the `.error` log level, and in the system log even with
+  `logLevel: .off`) and continues with a corrected value: a negative
+  `periodicIntervalInHours` or `periodicIntervalInDays` counts as `0` (1.5.0
+  stopped the app); a `requestTimeout` that is not a finite number of at
+  least 0.001 seconds counts as 10 seconds, and one longer than 60 seconds
+  as 60 seconds; an invalid variant slug passed to `reRuneSetup(variant:)` or
+  `reRuneSetVariant`, or stored earlier, selects Main, and
+  `reRuneSetVariant` with an invalid slug and `persist: true` saves nothing.
+  A stored selection that holds no text slug now also selects Main. A valid
+  slug has 1 to 64 lowercase ASCII letters, digits, `_`, or `-` and
+  starts with a letter.
+- `reRuneSetup` calls now run one at a time. A `reRuneSetup` called from code
+  that a running `reRuneSetup` triggers on the same thread (for example an
+  Observation `onChange` handler) is ignored and logged, where 1.5.0 recursed
+  until the stack overflowed. Results of an earlier setup that arrive after a
+  new `reRuneSetup` are discarded. Observation change handlers that a
+  `reRuneSetup` on the main thread triggers now run after setup has finished
+  its work, so they read the new session's values. On iOS 17 and later,
+  changes made on other threads reach Observation change handlers and SwiftUI
+  views in one update instead of one update per change;
+  `reRuneRevisionPublisher` and the other publishers are not affected.
+- Errors, warnings, and safety events are now also written to the unified
+  system log under the subsystem `io.rerune.sdk` (categories `setup`,
+  `runtime`, and `safety`), even with `logLevel: .off`, once per distinct
+  message per process. They never contain translation values or the publish
+  ID. From `.info`, the SDK log still shows the publish ID in request URLs,
+  and the `errorMessage` of a failed update check can contain it, as in
+  1.5.0.
+- A publish ID that contains an unpaired UTF-16 surrogate no longer crashes
+  on iOS 17 and 18 and no longer drops the ID from the request on iOS 15.
+
+#### Storage and privacy
+
+- ReRune now ships a privacy manifest (`PrivacyInfo.xcprivacy`) in the Swift
+  package and in every framework slice of the XCFramework. It declares no
+  tracking, no tracking domains, no collected data, and no required reason
+  APIs.
+- ReRune's cache in Application Support is now excluded from iCloud and
+  computer backups, except the Variant selection saved with
+  `reRuneSetVariant(persist: true)`, which stays in backups. The first launch
+  with 1.6.0 moves the files 1.5.0 wrote, so nothing downloads again. After a
+  restore, the app shows its own strings, with the saved Variant selection,
+  until the next update check downloads the languages. An app that goes back
+  to 1.5.0 after the move downloads its translations again.
+- Saving a Variant selection with `persist: true` now keeps the other
+  publish IDs' saved selections, which 1.5.0 dropped when the file held an
+  entry it could not read.
+
 ## 1.5.0 (2026-10-22)
 
 ### SDK consumer changes

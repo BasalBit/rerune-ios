@@ -2,7 +2,7 @@
 
 The ReRune reading example implemented in UIKit. Select `ReRuneUIKitExample` in `../ReRuneExamples.xcworkspace` to run it with Xcode on iOS 15 or later.
 
-UIKit owns every screen and control. Native controllers subscribe to the shared store and update existing labels, menus, progress views, and story cards. Each tab keeps its own scroll view. The reader keeps its chapter and bookmark through locale and OTA updates. No screen uses a SwiftUI hosting controller.
+UIKit owns every screen and control. Native controllers subscribe to the shared store and update existing labels, menus, progress views, and story cards. Each tab keeps its own scroll view. The reader keeps its chapter and bookmark through locale and OTA updates. No screen uses a SwiftUI hosting controller. The app uses the UIScene lifecycle: the app delegate sets up ReRune, creates the shared store, and restores the saved edition at launch, and the scene delegate that `Info.plist` declares in its scene manifest owns the window.
 
 Configure your OTA publish ID and variant slug in `Config/Example.xcconfig`. `ChapterSDK.configure()` passes a Boolean directly to `reRuneSetup`; change that Boolean to choose the launch mode. The settings state reads the active value from `reRuneIsStagingModeEnabled`. The SDK package dependency, bundle identifier, and signing settings are preserved. The app registers shared resources from `../Chapter/`, displays the name ReRune, and keeps the existing ReRune app icon.
 
