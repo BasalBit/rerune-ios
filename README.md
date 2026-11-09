@@ -179,7 +179,11 @@ Text(NSLocalizedString("title", comment: ""))
 
 On iOS 17 and later, views that look up strings in their `body` refresh
 automatically when ReRune applies new translations. Strings resolved outside
-`body`, for example in an initializer or a view model, do not.
+`body`, for example in an initializer or a view model, do not. Call the
+first `reRuneSetup(...)` on the main thread, as `App.init` does above,
+before the UI reads strings: a view that looks up a string while the first
+setup runs on another thread does not refresh when that setup applies its
+strings.
 
 A `Text("key")`, or a view that takes a key, inside
 `.environment(\.locale, ...)` with a locale other than the device's current
@@ -511,7 +515,7 @@ Foundation chooses the plural category using the device's current formatting loc
 - Every manifest locale requires a non-negative `minimum_delta_base_version`. Exact version/minimum matches skip that locale. A missing cache record or minimum change requests the manifest locale URL unchanged as a full replacement (for example `.../sq/88.json`); otherwise changed versions request a delta by prepending the stored successful version and `..` to the file name (for example `.../sq/86..88.json`).
 - Locale `409` responses and manifests whose locale target is behind the stored successful version are treated as stale-manifest signals. ReRune retries the complete synchronization once after fetching the manifest without `If-None-Match`, then returns `.failed` if the refreshed state is still stale.
 - ETag revalidation applies only to the manifest. Locale requests never send `If-None-Match`, and a locale `304` is treated as an unsupported per-locale failure that preserves cached state.
-- `main_language` must normalize to a locale declared in the same manifest. Manifests without it are rejected; an invalid cached manifest and its locale bundles are purged during setup.
+- `main_language` must normalize to a locale declared in the same manifest. Manifests without it are rejected; an invalid cached manifest is purged during setup together with its locale bundles, its rejection records, and the crash loop markers of other app processes.
 - Each locale URL returns a top-level array of locale-scoped generic translation
   records. Object and array nodes can contain children under `translationKeys`.
   Every node has a `values` array containing zero or one entry, and only
@@ -584,7 +588,7 @@ Foundation chooses the plural category using the device's current formatting loc
 - When another component set its own class on `Bundle.main` before setup, ReRune gives `Bundle.main` a class derived from it, so that component keeps answering what ReRune does not serve. When `Bundle.main` is observed with key value observing at setup, ReRune adds its lookups to the observing class instead and serves no remote values after the last observer is removed, until the next `reRuneSetup(...)`. Both cases log a warning.
 - SwiftUI `Text("key")` and views that take a key show OTA values whenever SwiftUI creates them (see the SwiftUI quick start). `String(localized:)`, `LocalizedStringResource`, and `AttributedString(localized:)` are not served by ReRune; use `NSLocalizedString(...)` for those strings. This also applies to apps that use String Catalogs (`.xcstrings`), whose compiled strings ReRune otherwise overrides and checks like `.strings` files. On iOS 17, Foundation's `String(localized:)` calls `-localizedStringForKey:value:table:localizations:` with nil localizations, which ReRune's `Bundle.main` override serves, so `String(localized:)` was observed to show ReRune values on an iOS 17.0 simulator; iOS 18 and later use a non public path that ReRune does not serve. This is observed iOS 17 behavior, not a guarantee; do not rely on it.
 - To serve `Text("key")`, ReRune writes each locale's accepted remote values as string files into `Library/Caches/ReRuneRuntimeStrings`. The files of earlier app launches are removed in the background once a later launch writes its own files. When it cannot write them, `Text("key")` still shows remote values that are not plurals until a later write succeeds.
-- Each content change of a language in the lookup order, and each `reRuneSetup(...)` call, writes a new copy of that language's string files (about 1 MB at 10,000 keys and 0.2 MB at 2,000 keys, measured on macOS and the iOS 17.0, 18.6, and 26.5 simulators), and the copies stay until a later launch writes its own. Foundation keeps a bundle for every copy until the app process ends (about 0.015 MB of memory each once `Text` read it). A return to the foreground whose update check finds nothing new writes nothing.
+- Each new content of a language in the lookup order writes a new copy of that language's string files (about 1 MB at 10,000 keys and 0.2 MB at 2,000 keys, measured on macOS and the iOS 17.0, 18.6, and 26.5 simulators). Copies are named by their content: switching a language back to content it had before, or calling `reRuneSetup(...)` again with the same content, uses the copy already on disk and its bundle and writes nothing. Once a new copy is in use, ReRune removes that language's older copies except the previous one, and content that comes back after its copy was removed gets a new copy. Foundation keeps a bundle for every copy ReRune used until the app process ends (about 0.015 MB of memory each once `Text` read it). A return to the foreground whose update check finds nothing new writes nothing.
 - Periodic refresh policy uses split fields: `periodicIntervalInHours` + `periodicIntervalInDays`.
 - `checkOnStart` (default `true`) checks for updates after setup and on every
   return to the foreground, that is when the app was in the background (the

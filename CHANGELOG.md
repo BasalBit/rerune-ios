@@ -2,6 +2,106 @@
 
 ## Unreleased
 
+## 1.6.1 (2026-11-09)
+
+### SDK consumer changes
+
+- The string files that ReRune writes for `Text("key")` into
+  `Library/Caches/ReRuneRuntimeStrings` are now named by their content and
+  reused. Switching a language back to content it had before, or calling
+  `reRuneSetup` again with the same content, uses the copy already on disk
+  and its bundle, writes nothing, and creates no new bundle. New content
+  still writes a new copy, and Foundation still keeps a bundle for every
+  copy ReRune used until the app process ends.
+- Once a new copy of a language is in use, ReRune removes that language's
+  older copies of the running process except the previous one, which a
+  lookup that decided just before the change may still read. Measured on
+  macOS and the iOS 17.0, 18.6, and 26.5 simulators: 200 content changes of
+  a 10,000 key language leave 3 directories of runtime string files in all
+  (that language's current and previous copy and one of the main
+  language), about 2.6 MB, instead of 202 directories and about 200 MB, and
+  100 setups leave 2 directories (one per language) instead of 202.
+  Content that comes back after its copy was removed gets a new copy. The
+  files of earlier launches are still removed once a later launch writes
+  its own.
+- A setup that starts while the background write of the setup it replaces
+  is still running no longer leaves that write's copy and bundle behind. A
+  `Text` lookup whose language got new content, or was unloaded, while
+  ReRune wrote its files no longer uses that copy: it shows a remote value
+  that is not a plural directly, and for a plural the app's own string or
+  the key, as when the files cannot be written.
+- The first `Text` lookup after a content change, when it comes before
+  ReRune's background write has finished, now also computes a digest of the
+  language's values. Measured with release builds on macOS and the iOS
+  17.0, 18.6, and 26.5 simulators at 10,000 keys: 16.6 to 19.4 ms instead
+  of 10.6 to 12.1 ms within 3 ms of the change, 6.7 to 7.3 ms instead of
+  0.3 ms at 8 ms, and no difference at 30 ms. At 2,000 keys it adds about
+  2 ms right after the change and at most 0.08 ms at 3 to 30 ms. Switching
+  back to content shown before, while its copy is still on disk, costs 3 to
+  5 ms less than in 1.6.0 at 10,000 keys when the lookup comes within 3 ms
+  of that change, and about 0.3 ms less at 8 and 30 ms. Removing older
+  copies takes about 0.3 ms (at most 0.8 ms measured) on the thread that
+  stores the new copy.
+- A remote star width or precision (`%*d`, `%.*f`) of a key the app does
+  not ship, checked against the value passed at the call site, is now
+  served only where that value uses the argument as the same field (width
+  or precision) of the same conversion, and as a left justified width only
+  where the call site's is left justified. Before, any star of that value
+  at the position counted. On macOS, with a star argument of 200,000, a
+  remote `%-*f` that 1.6.0 served for a call site's `%.*f` kept
+  `String.localizedStringWithFormat` busy for 3.0 s, where the call site's
+  own value took 0.002 s or less. Such a value is now left out for its key
+  with the field width warning, whose text now states the same field rule
+  (with examples such as `%-*f` where the app's value has `%.*f`), and
+  lookup uses the next available value. A remote value that repeats the
+  call site's own star field, such as `%*1$d%*1$d` for `%2$*1$d`, is still
+  served and pads once per copy (a known limitation).
+- A backup restored from a layout that kept ReRune's crash loop markers at
+  the root, without a readable manifest, no longer makes ReRune quarantine
+  a language version that this install downloaded and parsed without
+  ending. When setup finds no readable manifest, it now also removes the
+  crash loop markers that other app processes left; the markers of parses
+  still running in the app's process stay. A restore that also brings back
+  a manifest can still quarantine the version that a restored marker names
+  (a known limitation).
+- On the first launch after an update from 1.5.0, a staging mode switch
+  that runs while another `reRuneSetup(staging: true)` starts no longer
+  deletes the saved staging languages, and a staging session whose first
+  move of the saved languages failed shows their saved text when one is
+  selected.
+- A saved language is no longer dropped when a session could not move
+  ReRune's files into the folder excluded from backup and later wrote a
+  language at the old place: the next launch merges both folders, and a
+  language file written there later replaces the older copy of the same
+  language. A language saved or removed after its old copy could not be
+  moved is no longer replaced by that old copy at the next launch, and a
+  failed move of saved languages, when ReRune's other files moved, now
+  logs that a later launch moves the rest.
+- Saving a Variant selection with `persist: true` (also
+  `reRuneResetVariant()`) no longer drops another publish ID's saved
+  selection when a session that a later `reRuneSetup` replaced saves at the
+  same time as the new session.
+- When `settings.json` exists but cannot be read (for example without read
+  permission), a persisted `reRuneSetVariant` or `reRuneResetVariant()` now
+  fails with `ReRuneVariantError.persistenceFailed`, logs
+  `Variant persistence failed.`, and keeps the file and the current
+  Variant. 1.6.0 replaced the file with only this publish ID's selection
+  and switched the Variant. A file that ReRune reads but cannot use (not
+  JSON, for example) is still replaced.
+- On iOS 17 and later, a SwiftUI view or an Observation change handler that
+  looks up strings while a later `reRuneSetup` runs on another thread now
+  refreshes when that setup, or a later change, applies new strings.
+  Before, the setup removed ReRune's `Bundle.main` override until it
+  finished, so such a lookup registered nothing and kept its text until
+  something else refreshed it. During that time lookups now get ReRune's
+  answer for the new setup, which is the app's bundled text until the
+  saved strings are loaded. The first `reRuneSetup` call is not covered:
+  call it on the main thread, as the quick start does, before the UI reads
+  strings. A setup after another component changed the class of
+  `Bundle.main`, for example by observing it with key value observing after
+  `reRuneSetup`, is not covered either.
+- iOS 15 and 16 and physical devices have not been tested yet.
+
 ## 1.6.0 (2026-11-06)
 
 ### SDK consumer changes
