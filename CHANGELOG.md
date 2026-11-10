@@ -2,6 +2,59 @@
 
 ## Unreleased
 
+## 1.7.0 (2026-11-10)
+
+### SDK consumer changes
+
+- 1.7.0 adds, removes, and changes no public API, so upgrading from 1.6.1
+  needs no source change.
+- A `reRuneSetVariant(_:persist:)` call with `persist: true`, or a
+  `reRuneResetVariant()` call, that is still running when a later
+  `reRuneSetup` reads the saved selection of the same publish ID no longer
+  saves. The call returns normally, logs
+  `Discarded a variant change of a previous setup.` at the `.info` log
+  level, and, as in 1.6.1, does not change the strings of the running
+  session. `settings.json` keeps what that setup read, so the next launch
+  no longer starts with the ended session's choice, as it could in 1.6.1.
+  A save that reaches `settings.json` before that setup reads it is still
+  saved, and that setup starts with it; so is a late save for another
+  publish ID. When the choice should still apply, call
+  `reRuneSetVariant(_:persist:)` again after the new `reRuneSetup`.
+- Such a refused call also returns normally when `settings.json` exists
+  but cannot be read, where 1.6.1 threw
+  `ReRuneVariantError.persistenceFailed`, and the file stays as it is. A
+  persisted call that is not refused still throws
+  `ReRuneVariantError.persistenceFailed` when its save fails.
+- On iOS 17 and later, a SwiftUI view or an Observation change handler that
+  looks up strings while the first `reRuneSetup` runs on another thread now
+  refreshes when that setup, or a later change, applies new strings.
+  `Bundle.main` now gets ReRune's class and lookups at the start of the
+  first setup, so such a lookup gets ReRune's answer, the app's bundled
+  text until the saved strings are loaded. A lookup made before the first
+  `reRuneSetup` call, or at the very start of that call, is still answered
+  by the system and does not refresh. Call the first `reRuneSetup` before
+  the UI reads strings, as the README quick start does in `App.init`; it
+  no longer has to run on the main thread.
+- Key value observing that another component adds on `Bundle.main` while
+  the first `reRuneSetup` runs is now handled like observing added after
+  `reRuneSetup`. The first setup logs no class warning for it, also when
+  the component had given `Bundle.main` its own class before. Each later
+  `reRuneSetup` logs that `Bundle.main` has a class
+  `set by another component after reRuneSetup`, and on iOS 17 and later a
+  lookup made on another thread while such a setup runs is answered by
+  the system and does not refresh. 1.6.1 added its lookups to the
+  observing class and logged the key value observing warning at every
+  `reRuneSetup`. To avoid this, add the observing before the first
+  `reRuneSetup` call, or run `reRuneSetup` on the main thread, so that
+  SwiftUI views make no lookup while it runs.
+- Fixed a crash in the app's `removeObserver` call. It happened when
+  another component had given `Bundle.main` a class made at run time from
+  its own Swift `Bundle` subclass and observed `Bundle.main` with key
+  value observing when `reRuneSetup` ran. ReRune now adds its lookups to
+  that observing class in place, as for other observing classes, and logs
+  that the class
+  `reports another class as its own (key value observing does this)`.
+
 ## 1.6.1 (2026-11-09)
 
 ### SDK consumer changes
@@ -100,7 +153,6 @@
   strings. A setup after another component changed the class of
   `Bundle.main`, for example by observing it with key value observing after
   `reRuneSetup`, is not covered either.
-- iOS 15 and 16 and physical devices have not been tested yet.
 
 ## 1.6.0 (2026-11-06)
 
@@ -152,8 +204,6 @@
   automatically. Apps with a minimum deployment target of iOS 17 or later get
   a deprecation warning and can remove it. Apps that support iOS 15 or 16
   keep it and see no warning.
-- iOS 15 and 16, physical devices, and a real iCloud or computer backup and
-  restore have not been tested yet.
 
 #### SwiftUI and lookups
 

@@ -180,10 +180,8 @@ Text(NSLocalizedString("title", comment: ""))
 On iOS 17 and later, views that look up strings in their `body` refresh
 automatically when ReRune applies new translations. Strings resolved outside
 `body`, for example in an initializer or a view model, do not. Call the
-first `reRuneSetup(...)` on the main thread, as `App.init` does above,
-before the UI reads strings: a view that looks up a string while the first
-setup runs on another thread does not refresh when that setup applies its
-strings.
+first `reRuneSetup(...)` before the UI reads strings, as `App.init` does
+above.
 
 A `Text("key")`, or a view that takes a key, inside
 `.environment(\.locale, ...)` with a locale other than the device's current
@@ -435,8 +433,9 @@ try await reRuneSetVariant(ReRuneVariant("customer_acme"))
 ```
 
 The setter changes subsequent native Foundation lookups before it returns and
-emits through `reRuneRevisionPublisher`. Pass `persist: true` to restore the
-selection during later `reRuneSetup(...)` calls:
+emits through `reRuneRevisionPublisher`, unless a later `reRuneSetup(...)`
+replaced its session while it ran (see below). Pass `persist: true` to restore
+the selection during later `reRuneSetup(...)` calls:
 
 ```swift
 try await reRuneSetVariant(
@@ -451,6 +450,15 @@ Without persistence, `.main` or a named Variant applies only to the current
 runtime. A stored selection takes precedence over a later setup argument. The
 SDK does not fetch the project Variant catalog, so the application selects the
 published runtime value using context it already owns.
+
+When a later `reRuneSetup(...)` replaces the session while a call still runs,
+the call belongs to the ended session: it does not change lookups or emit, and
+logs `Discarded a variant change of a previous setup.` at the `.info` level.
+With `persist: true` it also saves nothing once that setup has read the saved
+selection, so the saved selection stays the one the new session runs with. A
+save made before that read can still fail and throw
+`ReRuneVariantError.persistenceFailed`, as for any session. Call
+`reRuneSetVariant` again after the new setup when the selection should apply.
 
 A runtime value (slug) has 1 to 64 lowercase ASCII letters, digits, `_`, or
 `-` and starts with a letter. An invalid slug, passed to `reRuneSetup` or
